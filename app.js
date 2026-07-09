@@ -36,14 +36,21 @@
   init();
 
   function init() {
-    courses = courses.map(normaliseCourse).filter(function (course) {
-      return Array.isArray(course.coordinates) && isFinite(course.coordinates[0]) && isFinite(course.coordinates[1]);
-    });
+    courses = prepareCourses(courses);
     state.selectedId = courses[0] && courses[0].id;
     hydrateStates();
     bind();
     initMap();
     render();
+    if (courses.length <= 10) {
+      loadNationalCourseData();
+    }
+  }
+
+  function prepareCourses(list) {
+    return list.map(normaliseCourse).filter(function (course) {
+      return Array.isArray(course.coordinates) && isFinite(course.coordinates[0]) && isFinite(course.coordinates[1]);
+    });
   }
 
   function normaliseCourse(course) {
@@ -61,6 +68,101 @@
       summary: course.summary || 'Golf course in ' + [course.town, course.region, course.state].filter(Boolean).join(', ') + '.',
       searchText: [course.name, course.town, course.region, course.state, course.access, course.summary].join(' ').toLowerCase()
     });
+  }
+
+  async function loadNationalCourseData() {
+    setStatus('Loading all Australian courses from OpenStreetMap...');
+    try {
+      var imported = await fetchOverpassCourses();
+      if (!imported.length) {
+        throw new Error('No course records returned');
+      }
+      courses = prepareCourses(imported);
+      state.selectedId = courses[0] && courses[0].id;
+      hydrateStates();
+      render(true);
+      setStatus('Loaded ' + courses.length + ' Australian course records.');
+      window.setTimeout(function () { setStatus(''); }, 3200);
+    } catch (error) {
+      setStatus('Preview data only: full OpenStreetMap load failed. Try refreshing in a minute.');
+      console.error(error);
+    }
+  }
+
+  async function fetchOverpassCourses() {
+    var endpoints = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.ru/api/interpreter'
+    ];
+    var query = '[out:json][timeout:180];area["ISO3166-1"="AU"][admin_level=2]->.australia;(node["leisure"="golf_course"](area.australia);way["leisure"="golf_course"](area.australia);relation["leisure"="golf_course"](area.australia););out center tags;';
+    var lastError;
+    for (var i = 0; i < endpoints.length; i += 1) {
+      try {
+        var response = await fetch(endpoints[i], {
+          method: 'POST',
+          headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+          body: new URLSearchParams({ data: query })
+        });
+        if (!response.ok) throw new Error(endpoints[i] + ' returned HTTP ' + response.status);
+        var data = await response.json();
+        var records = Array.isArray(data.elements) ? data.elements.map(fromOverpass).filter(Boolean) : [];
+        records = dedupeCourses(records);
+        if (records.length > 100) return records;
+        lastError = new Error('Only ' + records.length + ' records returned from ' + endpoints[i]);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError || new Error('OpenStreetMap load failed');
+  }
+
+  function fromOverpass(element) {
+    var tags = element.tags || {};
+    var lon = Number(element.lon != null ? element.lon : element.center && element.center.lon);
+    var lat = Number(element.lat != null ? element.lat : element.center && element.center.lat);
+    if (!isFinite(lon) || !isFinite(lat)) return null;
+    var name = clean(tags.name || tags.official_name || tags.short_name || ('Golf Course near ' + townFromTags(tags)));
+    var stateCode = clean(tags['addr:state'] || inferState(lon, lat));
+    var town = clean(tags['addr:city'] || tags['addr:town'] || tags['addr:suburb'] || tags['addr:locality'] || tags['is_in:city'] || stateCode);
+    var region = clean(tags['is_in:region'] || tags['addr:region'] || town || stateCode);
+    var website = firstUrl(tags.website || tags['contact:website'] || tags.url || tags['contact:url']);
+    var booking = firstUrl(tags.booking || tags['booking:website'] || tags['reservation:website']);
+    var coords = [round(lon), round(lat)];
+    var aerial = aerialTile(coords);
+    var id = slug(name + '-' + stateCode + '-' + (element.id || coords.join('-')));
+    return {
+      id: id,
+      name: name,
+      town: town,
+      region: region,
+      state: stateCode,
+      coordinates: coords,
+      holes: clean(tags.holes || ''),
+      access: accessLabel(tags),
+      priceLevel: priceLevel(tags, name),
+      homepageUrl: website,
+      bookingUrl: booking,
+      imageUrl: website ? favicon(website) : aerial,
+      fallbackImageUrl: aerial,
+      imageAlt: name + (website ? ' logo' : ' aerial course image'),
+      mediaKind: website ? 'logo' : 'photo',
+      summary: summary(tags, town, region, stateCode),
+      webSearchUrl: 'https://www.google.com/search?q=' + encodeURIComponent(name + ' ' + town + ' ' + stateCode + ' golf club website')
+    };
+  }
+
+  function dedupeCourses(items) {
+    var seen = new Set();
+    var out = [];
+    items.forEach(function (item) {
+      var key = slug(item.name + '-' + item.town + '-' + item.state);
+      if (!seen.has(key)) {
+        seen.add(key);
+        out.push(item);
+      }
+    });
+    return out.sort(function (a, b) { return a.state.localeCompare(b.state) || a.name.localeCompare(b.name); });
   }
 
   function bind() {
@@ -98,7 +200,7 @@
 
   function initMap() {
     if (!window.maplibregl) {
-      els.status.textContent = 'Map library could not load.';
+      setStatus('Map library could not load.');
       return;
     }
     map = new maplibregl.Map({
@@ -113,7 +215,6 @@
     popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 24 });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     map.on('load', function () {
-      els.status.textContent = courses.length ? '' : 'No course data was generated yet. Check the GitHub Pages workflow.';
       renderMarkers();
     });
   }
@@ -144,7 +245,7 @@
     renderDetail(filtered);
     renderList(filtered);
     renderMarkers(filtered);
-    if (shouldFit && filtered.length && map) fitToCourses(filtered.slice(0, 120));
+    if (shouldFit && filtered.length && map) fitToCourses(filtered.slice(0, 160));
   }
 
   function renderDetail(filtered) {
@@ -225,6 +326,60 @@
     map.fitBounds(bounds, { padding: 60, maxZoom: 9, duration: 500 });
   }
 
+  function accessLabel(tags) {
+    var access = String(tags.access || '').toLowerCase();
+    if (access === 'private' || tags.private === 'yes') return 'Private club';
+    if (access === 'customers') return 'Public access';
+    if (access === 'permissive' || access === 'yes' || !access) return 'Golf course';
+    return clean(tags.access || 'Golf course');
+  }
+
+  function priceLevel(tags, name) {
+    var text = [name, tags.access, tags.fee, tags.operator].join(' ').toLowerCase();
+    if (/royal|barnbougle|resort|links|private|championship|sanctuary|joondalup|brookwater/.test(text)) return 5;
+    if (/country club|club|fee|yes/.test(text)) return 3;
+    return 2;
+  }
+
+  function summary(tags, town, region, stateCode) {
+    var bits = [];
+    if (tags.holes) bits.push(tags.holes + ' holes');
+    if (tags.par) bits.push('Par ' + tags.par);
+    if (tags.operator) bits.push('Operated by ' + tags.operator);
+    var prefix = bits.length ? bits.join(' - ') + '. ' : '';
+    return prefix + 'Golf course in ' + [town, region, stateCode].filter(Boolean).join(', ') + '.';
+  }
+
+  function inferState(lon, lat) {
+    if (lat < -39) return 'TAS';
+    if (lon < 129) return 'WA';
+    if (lon >= 129 && lon < 138) return lat > -26 ? 'NT' : 'SA';
+    if (lon >= 138 && lon < 141) return lat > -29 ? 'QLD' : 'SA';
+    if (lon >= 141 && lon < 144) return lat > -29 ? 'QLD' : lat > -36 ? 'NSW' : 'VIC';
+    if (lon >= 144 && lon < 150) return lat > -37 ? 'NSW' : 'VIC';
+    if (lon >= 150) return lat > -29 ? 'QLD' : 'NSW';
+    return 'AU';
+  }
+
+  function townFromTags(tags) {
+    return tags['addr:city'] || tags['addr:town'] || tags['addr:suburb'] || tags['addr:locality'] || tags['is_in:city'] || 'Australia';
+  }
+
+  function firstUrl(value) {
+    var text = String(value || '').split(';')[0].trim();
+    if (!text) return '';
+    return /^https?:\/\//i.test(text) ? text : 'https://' + text.replace(/^\/\//, '');
+  }
+
+  function favicon(value) {
+    try {
+      var host = new URL(value).hostname;
+      return 'https://icons.duckduckgo.com/ip3/' + host + '.ico';
+    } catch (error) {
+      return '';
+    }
+  }
+
   function infoLine(course) {
     return [course.holes ? course.holes + ' holes' : '', course.access || 'Golf course'].filter(Boolean).join(' - ');
   }
@@ -240,7 +395,10 @@
     var y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
     return 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/' + z + '/' + y + '/' + x;
   }
-  function slug(value) { return String(value || 'course').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+  function clean(value) { return String(value || '').trim().replace(/\s+/g, ' '); }
+  function round(value) { return Math.round(Number(value) * 1000000) / 1000000; }
+  function setStatus(message) { els.status.textContent = message || ''; }
+  function slug(value) { return String(value || 'course').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function escAttr(value) { return esc(value).replace(/`/g, '&#96;'); }
 })();
