@@ -129,6 +129,7 @@ function summary(tags, town, region, state) {
 }
 
 function inferState(lon, lat) {
+  if (lon >= 148.75 && lon <= 149.45 && lat >= -35.95 && lat <= -35.1) return 'ACT';
   if (lat < -39) return 'TAS';
   if (lon < 129) return 'WA';
   if (lon >= 129 && lon < 138) return lat > -26 ? 'NT' : 'SA';
