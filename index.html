@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#07542f" />
+  <title>Aussie Golf Guide</title>
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="courses.js"></script>
+</head>
+<body>
+  <aside class="panel" aria-label="Golf course search and details">
+    <header>
+      <p>Aussie Golf Guide</p>
+      <h1>Find Australian golf courses</h1>
+    </header>
+
+    <section class="controls" aria-label="Search controls">
+      <label for="searchInput">Search</label>
+      <input id="searchInput" type="search" placeholder="Course, town, region, state" autocomplete="off" />
+
+      <div class="filter-row">
+        <label>State
+          <select id="stateFilter">
+            <option value="all">All states</option>
+          </select>
+        </label>
+        <label>Price
+          <select id="priceFilter">
+            <option value="all">Any price</option>
+            <option value="2">Value</option>
+            <option value="3">Standard</option>
+            <option value="4">Premium</option>
+            <option value="5">Destination</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="mapButton" type="button" aria-pressed="true">Map</button>
+        <button id="satelliteButton" type="button" aria-pressed="false">Satellite</button>
+        <button id="clearButton" type="button">Clear</button>
+      </div>
+    </section>
+
+    <section id="selectedCourse" class="detail" aria-live="polite"></section>
+
+    <section class="results" aria-label="Matching courses">
+      <div class="results-heading">
+        <h2>Courses</h2>
+        <span id="resultCount">0 shown</span>
+      </div>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+  </aside>
+
+  <main class="map-wrap">
+    <div id="map" aria-label="Golf course map"></div>
+    <div id="mapStatus" class="map-status">Loading courses...</div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
