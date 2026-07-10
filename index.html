@@ -1,67 +1,80 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#07542f" />
-  <title>Aussie Golf Guide</title>
-  <link rel="preconnect" href="https://unpkg.com" />
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-  <script src="courses.js"></script>
-</head>
-<body>
-  <aside class="panel" aria-label="Golf course search and details">
-    <header>
-      <p>Aussie Golf Guide</p>
-      <h1>Find Australian golf courses</h1>
-    </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b3d26" />
+    <title>Aussie Golf Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,400;10..48,600;10..48,700;10..48,800&display=swap" rel="stylesheet" />
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="course-panel" aria-label="Golf course search and details">
+        <header class="app-header">
+          <p class="working-title">Australia course map</p>
+          <h1>Aussie Golf Guide</h1>
+        </header>
 
-    <section class="controls" aria-label="Search controls">
-      <label for="searchInput">Search</label>
-      <input id="searchInput" type="search" placeholder="Course, town, region, state" autocomplete="off" />
+        <section class="search-tools" aria-label="Search controls">
+          <label class="search-field">
+            <span>Search</span>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="Course, town, travel region, state" />
+          </label>
 
-      <div class="filter-row">
-        <label>State
-          <select id="stateFilter">
-            <option value="all">All states</option>
-          </select>
-        </label>
-        <label>Price
-          <select id="priceFilter">
-            <option value="all">Any price</option>
-            <option value="2">Value</option>
-            <option value="3">Standard</option>
-            <option value="4">Premium</option>
-            <option value="5">Destination</option>
-          </select>
-        </label>
-      </div>
+          <div class="filter-grid">
+            <label>
+              <span>State</span>
+              <select id="stateFilter"></select>
+            </label>
+            <label>
+              <span>Price</span>
+              <select id="priceFilter">
+                <option value="all">Any price</option>
+                <option value="2">Value - up to $$</option>
+                <option value="3">Standard - up to $$$</option>
+                <option value="4">Premium - up to $$$$</option>
+                <option value="5">Destination - up to $$$$$</option>
+              </select>
+            </label>
+          </div>
 
-      <div class="button-row">
-        <button id="mapButton" type="button" aria-pressed="true">Map</button>
-        <button id="satelliteButton" type="button" aria-pressed="false">Satellite</button>
-        <button id="clearButton" type="button">Clear</button>
-      </div>
-    </section>
+          <div class="action-row">
+            <button id="nearMeButton" class="secondary-button" type="button">Near me</button>
+            <button id="clearButton" class="icon-button" type="button" aria-label="Clear filters">Clear</button>
+          </div>
+        </section>
 
-    <section id="selectedCourse" class="detail" aria-live="polite"></section>
+        <section id="selectedCourse" class="selected-course" aria-live="polite"></section>
 
-    <section class="results" aria-label="Matching courses">
-      <div class="results-heading">
-        <h2>Courses</h2>
-        <span id="resultCount">0 shown</span>
-      </div>
-      <div id="resultsList" class="results-list"></div>
-    </section>
-  </aside>
+        <section class="results-section" aria-label="Matching courses">
+          <div class="results-heading">
+            <h2>Courses</h2>
+            <span id="resultCount"></span>
+          </div>
+          <div id="resultsList" class="results-list"></div>
+        </section>
 
-  <main class="map-wrap">
-    <div id="map" aria-label="Golf course map"></div>
-    <div id="mapStatus" class="map-status">Loading courses...</div>
-  </main>
+        <p class="data-attribution">
+          Course data includes OpenStreetMap and verified supplemental records. Satellite imagery is supplied by Esri World Imagery.
+        </p>
+      </aside>
 
-  <script src="app.js"></script>
-</body>
+      <main class="map-stage" aria-label="Map of Australian golf courses">
+        <div id="map"></div>
+        <div id="mapModeToggle" class="map-mode-toggle" role="group" aria-label="Map view">
+          <button class="is-active" type="button" data-map-style="map" aria-pressed="true">Map</button>
+          <button type="button" data-map-style="satellite" aria-pressed="false">Satellite</button>
+        </div>
+        <div id="mapStatus" class="map-status" role="status" aria-live="polite"></div>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="courses.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
