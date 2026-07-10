@@ -17,7 +17,7 @@ const stateAreas = [
   { code: 'WA', iso: 'AU-WA' }
 ];
 const stateCodes = stateAreas.map((state) => state.code);
-const importConcurrency = 2;
+const importConcurrency = 1;
 
 const courseOverrides = {
   'osm-relation-4180856': {
