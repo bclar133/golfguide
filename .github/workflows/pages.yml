@@ -34,6 +34,9 @@ jobs:
       - name: Build course data
         run: node scripts/build-pages-data.mjs
 
+      - name: Clean generated data
+        run: node scripts/postprocess-pages-data.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
