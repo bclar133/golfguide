@@ -242,7 +242,8 @@ function fromOverpass(element, stateContext) {
   const lat = Number(element.lat ?? element.center?.lat);
   if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
 
-  const rawName = clean(tags.name || tags.official_name || tags.short_name || 'Golf Course near ' + townFromTags(tags));
+  const rawName = clean(tags.name || tags.official_name || tags.short_name);
+  if (!rawName) return null;
   if (!isCourseLike(tags, rawName)) return null;
 
   const sourceId = sourceIdFor(element);
