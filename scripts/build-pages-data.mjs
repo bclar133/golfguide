@@ -5,7 +5,7 @@ const endpoints = [
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.openstreetmap.ru/api/interpreter'
 ];
-const userAgent = 'AussieGolfGuide/0.2 (github.com/bclar133/golfguide)';
+const userAgent = 'AussieGolfGuide/0.3 (github.com/bclar133/golfguide)';
 const states = [
   { code: 'ACT', iso: 'AU-ACT' },
   { code: 'NSW', iso: 'AU-NSW' },
@@ -97,178 +97,19 @@ const courseOverrides = {
 };
 
 const supplementalCourses = [
-  {
-    id: 'bonville-golf-resort',
-    name: 'Bonville Golf Resort',
-    town: 'Bonville',
-    region: 'Coffs Coast',
-    state: 'NSW',
-    coordinates: [153.0605, -30.3762],
-    holes: '18',
-    access: 'Golf resort',
-    priceLevel: 5,
-    homepageUrl: 'https://www.bonvillegolf.com.au/',
-    summary: 'Destination golf resort near Coffs Harbour.'
-  },
-  {
-    id: 'riverside-oaks-golf-resort',
-    name: 'Riverside Oaks Golf Resort',
-    town: 'Cattai',
-    region: 'Hawkesbury',
-    state: 'NSW',
-    coordinates: [150.9302, -33.5637],
-    holes: '36',
-    access: 'Golf resort',
-    priceLevel: 4,
-    homepageUrl: 'https://www.riversideoaks.com.au/',
-    summary: 'Golf resort on the Hawkesbury River with two championship courses.'
-  },
-  {
-    id: 'new-south-wales-golf-club',
-    name: 'New South Wales Golf Club',
-    town: 'La Perouse',
-    region: 'Sydney',
-    state: 'NSW',
-    coordinates: [151.2492, -33.989],
-    holes: '18',
-    access: 'Private club',
-    priceLevel: 5,
-    homepageUrl: 'https://www.nswgolfclub.com.au/',
-    summary: 'Championship links-style course at La Perouse.'
-  },
-  {
-    id: 'brisbane-golf-club',
-    name: 'Brisbane Golf Club',
-    town: 'Yeerongpilly',
-    region: 'Brisbane',
-    state: 'QLD',
-    coordinates: [153.0022, -27.5284],
-    holes: '18',
-    access: 'Private club',
-    priceLevel: 4,
-    homepageUrl: 'https://www.brisbanegolfclub.com.au/',
-    summary: 'Private club course in Yeerongpilly, Brisbane.'
-  },
-  {
-    id: 'sanctuary-cove-golf-and-country-club',
-    name: 'Sanctuary Cove Golf and Country Club',
-    town: 'Hope Island',
-    region: 'Gold Coast',
-    state: 'QLD',
-    coordinates: [153.3622, -27.8533],
-    holes: '36',
-    access: 'Private club',
-    priceLevel: 5,
-    homepageUrl: 'https://www.sanctuarycovegolf.com.au/',
-    summary: 'Gold Coast country club with The Pines and The Palms courses.'
-  },
-  {
-    id: 'woodford-golf-club-qld',
-    name: 'Woodford Golf Club',
-    town: 'Woodford',
-    region: 'Moreton Bay',
-    state: 'QLD',
-    coordinates: [152.791265, -26.950042],
-    holes: '18',
-    access: 'Public access',
-    priceLevel: 2,
-    homepageUrl: '',
-    summary: '18-hole golf course in Woodford, Queensland. No dedicated club website found yet.',
-    sourceUrl: 'https://www.openstreetmap.org/way/131822526'
-  },
-  {
-    id: 'noosa-springs-golf-and-spa-resort',
-    name: 'Noosa Springs Golf and Spa Resort',
-    town: 'Noosa Heads',
-    region: 'Sunshine Coast',
-    state: 'QLD',
-    coordinates: [153.1044, -26.4191],
-    holes: '18',
-    access: 'Golf resort',
-    priceLevel: 5,
-    homepageUrl: 'https://www.noosasprings.com.au/',
-    summary: 'Resort course in Noosa Heads on the Sunshine Coast.'
-  },
-  {
-    id: 'maleny-golf-club',
-    name: 'Maleny Golf Club',
-    town: 'North Maleny',
-    region: 'Sunshine Coast',
-    state: 'QLD',
-    coordinates: [152.866454, -26.762718],
-    holes: '18',
-    access: 'Public access',
-    priceLevel: 3,
-    homepageUrl: 'https://www.malenygolfclub.com.au/',
-    bookingUrl: 'https://malenygc.miclub.com.au/cms/public-bookings/',
-    summary: '18-hole par 69 public-access course at 15 Porters Lane, North Maleny.',
-    sourceUrl: 'https://www.malenygolfclub.com.au/'
-  },
-  {
-    id: 'hamilton-island-golf-club',
-    name: 'Hamilton Island Golf Club',
-    town: 'Dent Island',
-    region: 'Whitsundays',
-    state: 'QLD',
-    coordinates: [148.9462, -20.3476],
-    holes: '18',
-    access: 'Golf club',
-    priceLevel: 5,
-    homepageUrl: 'https://www.hamiltonislandgolfclub.com.au/',
-    summary: 'Island golf course on Dent Island in the Whitsundays.'
-  },
-  {
-    id: 'links-lady-bay-golf-course',
-    name: 'Links Lady Bay Golf Course',
-    town: 'Normanville',
-    region: 'Fleurieu Peninsula',
-    state: 'SA',
-    coordinates: [138.3117, -35.4517],
-    holes: '18',
-    access: 'Golf course',
-    priceLevel: 4,
-    homepageUrl: 'https://www.linksladybay.com.au/',
-    summary: 'Links-style course at Normanville on the Fleurieu Peninsula.'
-  },
-  {
-    id: 'ocean-dunes-golf-course',
-    name: 'Ocean Dunes Golf Course',
-    town: 'Currie',
-    region: 'King Island',
-    state: 'TAS',
-    coordinates: [143.847579, -39.896519],
-    holes: '18',
-    access: 'Golf course',
-    priceLevel: 5,
-    homepageUrl: 'https://oceandunes.com.au/',
-    summary: 'Coastal links course on King Island.'
-  },
-  {
-    id: 'st-andrews-beach-golf-course',
-    name: 'St Andrews Beach Golf Course',
-    town: 'Fingal',
-    region: 'Mornington Peninsula',
-    state: 'VIC',
-    coordinates: [144.8249, -38.4149],
-    holes: '18',
-    access: 'Public access',
-    priceLevel: 4,
-    homepageUrl: 'https://standrewsbeachgolf.com.au/',
-    summary: 'Public access course on the Mornington Peninsula.'
-  },
-  {
-    id: 'the-vines-resort-golf-club',
-    name: 'The Vines Resort Golf Club',
-    town: 'The Vines',
-    region: 'Swan Valley',
-    state: 'WA',
-    coordinates: [116.0065, -31.7544],
-    holes: '36',
-    access: 'Golf resort',
-    priceLevel: 4,
-    homepageUrl: 'https://www.vines.com.au/',
-    summary: 'Resort golf club in the Swan Valley.'
-  }
+  supplemental('bonville-golf-resort', 'Bonville Golf Resort', 'Bonville', 'Coffs Coast', 'NSW', [153.0605, -30.3762], '18', 'Golf resort', 5, 'https://www.bonvillegolf.com.au/', '', 'Destination golf resort near Coffs Harbour.'),
+  supplemental('riverside-oaks-golf-resort', 'Riverside Oaks Golf Resort', 'Cattai', 'Hawkesbury', 'NSW', [150.9302, -33.5637], '36', 'Golf resort', 4, 'https://www.riversideoaks.com.au/', '', 'Golf resort on the Hawkesbury River with two championship courses.'),
+  supplemental('new-south-wales-golf-club', 'New South Wales Golf Club', 'La Perouse', 'Sydney', 'NSW', [151.2492, -33.989], '18', 'Private club', 5, 'https://www.nswgolfclub.com.au/', '', 'Championship links-style course at La Perouse.'),
+  supplemental('brisbane-golf-club', 'Brisbane Golf Club', 'Yeerongpilly', 'Brisbane', 'QLD', [153.0022, -27.5284], '18', 'Private club', 4, 'https://www.brisbanegolfclub.com.au/', '', 'Private club course in Yeerongpilly, Brisbane.'),
+  supplemental('sanctuary-cove-golf-and-country-club', 'Sanctuary Cove Golf and Country Club', 'Hope Island', 'Gold Coast', 'QLD', [153.3622, -27.8533], '36', 'Private club', 5, 'https://www.sanctuarycovegolf.com.au/', '', 'Gold Coast country club with The Pines and The Palms courses.'),
+  supplemental('woodford-golf-club-qld', 'Woodford Golf Club', 'Woodford', 'Moreton Bay', 'QLD', [152.791265, -26.950042], '18', 'Public access', 2, '', '', '18-hole golf course in Woodford, Queensland. No dedicated club website found yet.', 'https://www.openstreetmap.org/way/131822526'),
+  supplemental('noosa-springs-golf-and-spa-resort', 'Noosa Springs Golf and Spa Resort', 'Noosa Heads', 'Sunshine Coast', 'QLD', [153.1044, -26.4191], '18', 'Golf resort', 5, 'https://www.noosasprings.com.au/', '', 'Resort course in Noosa Heads on the Sunshine Coast.'),
+  supplemental('maleny-golf-club', 'Maleny Golf Club', 'North Maleny', 'Sunshine Coast', 'QLD', [152.866454, -26.762718], '18', 'Public access', 3, 'https://www.malenygolfclub.com.au/', 'https://malenygc.miclub.com.au/cms/public-bookings/', '18-hole par 69 public-access course at 15 Porters Lane, North Maleny.', 'https://www.malenygolfclub.com.au/'),
+  supplemental('hamilton-island-golf-club', 'Hamilton Island Golf Club', 'Dent Island', 'Whitsundays', 'QLD', [148.9462, -20.3476], '18', 'Golf club', 5, 'https://www.hamiltonislandgolfclub.com.au/', '', 'Island golf course on Dent Island in the Whitsundays.'),
+  supplemental('links-lady-bay-golf-course', 'Links Lady Bay Golf Course', 'Normanville', 'Fleurieu Peninsula', 'SA', [138.3117, -35.4517], '18', 'Golf course', 4, 'https://www.linksladybay.com.au/', '', 'Links-style course at Normanville on the Fleurieu Peninsula.'),
+  supplemental('ocean-dunes-golf-course', 'Ocean Dunes Golf Course', 'Currie', 'King Island', 'TAS', [143.847579, -39.896519], '18', 'Golf course', 5, 'https://oceandunes.com.au/', '', 'Coastal links course on King Island.'),
+  supplemental('st-andrews-beach-golf-course', 'St Andrews Beach Golf Course', 'Fingal', 'Mornington Peninsula', 'VIC', [144.8249, -38.4149], '18', 'Public access', 4, 'https://standrewsbeachgolf.com.au/', '', 'Public access course on the Mornington Peninsula.'),
+  supplemental('the-vines-resort-golf-club', 'The Vines Resort Golf Club', 'The Vines', 'Swan Valley', 'WA', [116.0065, -31.7544], '36', 'Golf resort', 4, 'https://www.vines.com.au/', '', 'Resort golf club in the Swan Valley.')
 ];
 
 async function main() {
@@ -292,12 +133,11 @@ async function main() {
     throw new Error('OpenStreetMap import failed; refusing to deploy preview fallback data.');
   }
 
-  const merged = mergeSupplementals(generated, supplementalCourses.map(makeSupplemental));
+  const merged = mergeSupplementals(generated, supplementalCourses);
   const deduped = dedupe(merged).sort((a, b) => a.state.localeCompare(b.state) || a.name.localeCompare(b.name));
-  const mediaStats = await enrichWebsiteMedia(deduped);
   const output = '// Generated by scripts/build-pages-data.mjs from OpenStreetMap/Overpass plus verified supplements.\nwindow.GOLF_COURSES = ' + JSON.stringify(deduped, null, 2) + ';\n';
   fs.writeFileSync('courses.js', output, 'utf8');
-  console.log(`Generated ${deduped.length} courses (${importNotes.join(', ')}). Media: ${JSON.stringify(mediaStats)}`);
+  console.log(`Generated ${deduped.length} courses (${importNotes.join(', ')})`);
 }
 
 async function fetchStateElements(state) {
@@ -343,7 +183,7 @@ function fromOverpass(element, stateContext) {
   if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
 
   const rawName = clean(tags.name || tags.official_name || tags.short_name || 'Golf Course near ' + townFromTags(tags));
-  if (!isCourseLike(tags, rawName, element)) return null;
+  if (!isCourseLike(tags, rawName)) return null;
 
   const sourceId = sourceIdFor(element);
   const state = clean(normaliseState(tags['addr:state']) || stateContext.code || inferState(lon, lat));
@@ -385,7 +225,7 @@ function fromOverpass(element, stateContext) {
     course = { ...course, ...override, aliases: Array.from(aliases) };
     course.webSearchUrl = webSearchUrl(course.name, course.town, course.state);
     course.fallbackImageUrl = course.fallbackImageUrl || aerial;
-    if (!course.imageUrl || course.imageUrl === favicon(website) || course.imageUrl === aerial) {
+    if (!override.imageUrl) {
       course.imageUrl = course.homepageUrl ? favicon(course.homepageUrl) : aerial;
       course.mediaKind = course.homepageUrl ? 'logo' : 'photo';
     }
@@ -395,30 +235,30 @@ function fromOverpass(element, stateContext) {
   return course;
 }
 
-function makeSupplemental(course) {
-  const fallback = course.fallbackImageUrl || aerialTile(course.coordinates);
-  const imageUrl = course.imageUrl || (course.homepageUrl ? favicon(course.homepageUrl) : fallback);
+function supplemental(id, name, town, region, state, coordinates, holes, access, priceLevel, homepageUrl, bookingUrl, summaryText, sourceUrl = '') {
+  const fallback = aerialTile(coordinates);
+  const hasWebsite = Boolean(homepageUrl);
   return {
-    id: course.id,
-    name: course.name,
-    town: course.town,
-    region: course.region,
-    state: course.state,
-    coordinates: course.coordinates,
-    holes: course.holes || '',
-    access: course.access || 'Golf course',
-    priceLevel: course.priceLevel || 3,
-    homepageUrl: course.homepageUrl || '',
-    bookingUrl: course.bookingUrl || '',
-    imageUrl,
+    id,
+    name,
+    town,
+    region,
+    state,
+    coordinates,
+    holes,
+    access,
+    priceLevel,
+    homepageUrl,
+    bookingUrl,
+    imageUrl: hasWebsite ? favicon(homepageUrl) : fallback,
     fallbackImageUrl: fallback,
-    imageAlt: `${course.name} ${course.homepageUrl ? 'logo' : 'aerial course image'}`,
-    mediaKind: course.homepageUrl ? 'logo' : 'photo',
-    summary: course.summary || `Golf course in ${[course.town, course.region, course.state].filter(Boolean).join(', ')}.`,
-    source: course.source || 'Verified supplemental course',
-    sourceId: course.sourceId || `supplemental-${course.id}`,
-    sourceUrl: course.sourceUrl || course.homepageUrl || '',
-    webSearchUrl: webSearchUrl(course.name, course.town, course.state)
+    imageAlt: `${name} ${hasWebsite ? 'logo' : 'aerial course image'}`,
+    mediaKind: hasWebsite ? 'logo' : 'photo',
+    summary: summaryText,
+    source: 'Verified supplemental course',
+    sourceId: `supplemental-${id}`,
+    sourceUrl,
+    webSearchUrl: webSearchUrl(name, town, state)
   };
 }
 
@@ -450,169 +290,13 @@ function courseKeys(course) {
   ].filter(Boolean);
 }
 
-async function enrichWebsiteMedia(courses) {
-  const stats = { checked: 0, upgraded: 0, failed: 0 };
-  const targets = courses.filter((course) => course.homepageUrl && (!course.imageUrl || course.imageUrl.includes('icons.duckduckgo.com')));
-  await mapLimit(targets, 10, async (course) => {
-    stats.checked += 1;
-    try {
-      const media = await fetchWebsiteMedia(course.homepageUrl);
-      if (!media) return;
-      course.imageUrl = media.url;
-      course.mediaKind = media.kind;
-      course.imageAlt = `${course.name} ${media.kind === 'logo' ? 'logo' : 'course photo'}`;
-      course.imageSource = media.source;
-      stats.upgraded += 1;
-    } catch {
-      stats.failed += 1;
-    }
-  });
-  return stats;
-}
-
-async function fetchWebsiteMedia(homepageUrl) {
-  const response = await fetch(homepageUrl, {
-    headers: { 'user-agent': userAgent, accept: 'text/html,application/xhtml+xml' },
-    redirect: 'follow',
-    signal: AbortSignal.timeout(5500)
-  });
-  if (!response.ok) return null;
-  const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) return null;
-  const html = await response.text();
-  return extractMedia(html, response.url || homepageUrl);
-}
-
-function extractMedia(html, baseUrl) {
-  const logoImage = bestLogoImage(html, baseUrl);
-  if (logoImage) return { url: logoImage, kind: 'logo', source: 'official homepage logo' };
-
-  const jsonLdLogo = firstJsonLdImage(html, baseUrl, ['logo']);
-  if (jsonLdLogo) return { url: jsonLdLogo, kind: 'logo', source: 'official homepage json-ld logo' };
-
-  const metaImage = firstMetaImage(html, baseUrl);
-  if (metaImage) return { url: metaImage, kind: 'photo', source: 'official homepage social image' };
-
-  const jsonLdImage = firstJsonLdImage(html, baseUrl, ['image', 'photo']);
-  if (jsonLdImage) return { url: jsonLdImage, kind: 'photo', source: 'official homepage json-ld image' };
-
-  const icon = firstIcon(html, baseUrl);
-  if (icon) return { url: icon, kind: 'logo', source: 'official homepage icon' };
-
-  return null;
-}
-
-function bestLogoImage(html, baseUrl) {
-  const matches = Array.from(html.matchAll(/<img\b[^>]*>/gi));
-  let best = null;
-  let bestScore = 0;
-  for (const match of matches) {
-    const tag = match[0];
-    const src = attr(tag, 'src') || attr(tag, 'data-src') || attr(tag, 'data-lazy-src');
-    if (!src) continue;
-    const text = `${attr(tag, 'alt')} ${attr(tag, 'class')} ${attr(tag, 'id')} ${src}`.toLowerCase();
-    let score = 0;
-    if (text.includes('logo')) score += 80;
-    if (text.includes('brand')) score += 35;
-    if (text.includes('header')) score += 25;
-    if (text.includes('site')) score += 10;
-    if (/\.svg(\?|$)/i.test(src)) score += 10;
-    if (!isUsableImageUrl(src)) continue;
-    if (score > bestScore) {
-      bestScore = score;
-      best = absoluteUrl(src, baseUrl);
-    }
-  }
-  return bestScore >= 50 ? best : null;
-}
-
-function firstMetaImage(html, baseUrl) {
-  const names = ['og:image:secure_url', 'og:image', 'twitter:image', 'twitter:image:src'];
-  for (const name of names) {
-    const pattern = new RegExp(`<meta\\b[^>]*(?:property|name)=["']${escapeRegExp(name)}["'][^>]*>`, 'i');
-    const tag = html.match(pattern)?.[0];
-    const content = tag ? attr(tag, 'content') : '';
-    if (content && isUsableImageUrl(content)) return absoluteUrl(content, baseUrl);
-  }
-  return null;
-}
-
-function firstIcon(html, baseUrl) {
-  const matches = Array.from(html.matchAll(/<link\b[^>]*>/gi));
-  for (const match of matches) {
-    const tag = match[0];
-    const rel = attr(tag, 'rel').toLowerCase();
-    if (!rel.includes('icon')) continue;
-    const href = attr(tag, 'href');
-    if (href && isUsableImageUrl(href)) return absoluteUrl(href, baseUrl);
-  }
-  return null;
-}
-
-function firstJsonLdImage(html, baseUrl, fields) {
-  const scripts = Array.from(html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi));
-  for (const script of scripts) {
-    const text = stripHtml(script[1]).trim();
-    if (!text) continue;
-    try {
-      const parsed = JSON.parse(text);
-      const found = findJsonLdField(parsed, fields);
-      if (found && isUsableImageUrl(found)) return absoluteUrl(found, baseUrl);
-    } catch {
-      // Ignore broken structured data.
-    }
-  }
-  return null;
-}
-
-function findJsonLdField(value, fields) {
-  if (!value) return '';
-  if (typeof value === 'string') return '';
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const found = findJsonLdField(item, fields);
-      if (found) return found;
-    }
-    return '';
-  }
-  if (typeof value === 'object') {
-    for (const field of fields) {
-      const next = value[field];
-      if (typeof next === 'string') return next;
-      if (Array.isArray(next) && typeof next[0] === 'string') return next[0];
-      if (next && typeof next === 'object' && typeof next.url === 'string') return next.url;
-    }
-    for (const nested of Object.values(value)) {
-      const found = findJsonLdField(nested, fields);
-      if (found) return found;
-    }
-  }
-  return '';
-}
-
-async function mapLimit(items, limit, worker) {
-  let index = 0;
-  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (index < items.length) {
-      const item = items[index];
-      index += 1;
-      await worker(item);
-    }
-  });
-  await Promise.all(runners);
-}
-
-function isCourseLike(tags, name, element) {
+function isCourseLike(tags, name) {
   const leisure = String(tags.leisure || '').toLowerCase();
   const sport = String(tags.sport || '').toLowerCase();
   const golf = String(tags.golf || '').toLowerCase();
   if (['hole', 'tee', 'green', 'fairway', 'bunker', 'water_hazard', 'driving_range'].includes(golf)) return false;
   if (leisure === 'golf_course' || golf === 'course') return true;
-  if (sport === 'golf') {
-    if (element.type !== 'node') return true;
-    return /golf|links|country club|resort|course|club|dunes/i.test(name);
-  }
-  return false;
+  return sport === 'golf' && /golf|links|country club|resort|course|club|dunes/i.test(name);
 }
 
 function accessLabel(tags) {
@@ -702,44 +386,6 @@ function sourceIdFor(element) {
 
 function webSearchUrl(name, town, state) {
   return 'https://www.google.com/search?q=' + encodeURIComponent(`${name} ${town} ${state} golf club website`);
-}
-
-function attr(tag, name) {
-  const match = tag.match(new RegExp(`${name}\\s*=\\s*(["'])(.*?)\\1`, 'i')) || tag.match(new RegExp(`${name}\\s*=\\s*([^\\s>]+)`, 'i'));
-  return decodeEntities(match ? match[2] || match[1] || '' : '');
-}
-
-function absoluteUrl(value, baseUrl) {
-  try {
-    return new URL(decodeEntities(value), baseUrl).href;
-  } catch {
-    return '';
-  }
-}
-
-function isUsableImageUrl(value) {
-  const text = String(value || '').trim();
-  if (!text || text.startsWith('data:') || text.startsWith('#')) return false;
-  if (/\.gif(\?|$)/i.test(text)) return false;
-  return true;
-}
-
-function stripHtml(value) {
-  return String(value || '').replace(/<!--([\s\S]*?)-->/g, '').replace(/<[^>]*>/g, '');
-}
-
-function decodeEntities(value) {
-  return String(value || '')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
-}
-
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function clean(value) {
