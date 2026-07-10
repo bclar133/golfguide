@@ -11,6 +11,7 @@ const cleaned = [];
 
 for (const course of courses) {
   if (isKnownRetailNotCourse(course)) continue;
+  if (isUnnamedGeneratedCourse(course)) continue;
 
   const index = cleaned.findIndex((existing) => isDuplicateCourse(existing, course));
   if (index === -1) {
@@ -64,6 +65,10 @@ function scoreCourse(course) {
 function isKnownRetailNotCourse(course) {
   const name = normaliseName(course.name);
   return name === 'drummond golf' || name === 'golf world';
+}
+
+function isUnnamedGeneratedCourse(course) {
+  return /^Golf Course near\b/i.test(String(course.name || ''));
 }
 
 function normaliseName(value) {
