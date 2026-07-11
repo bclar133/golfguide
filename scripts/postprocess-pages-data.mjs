@@ -167,12 +167,17 @@ function applyMappedCourseOverride(course) {
     webSearchUrl: webSearchUrl(override.name, override.town, override.state)
   };
 
-  if (override.homepageUrl) {
-    next.imageUrl = favicon(override.homepageUrl) || next.imageUrl || next.fallbackImageUrl || '';
-    next.mediaKind = 'logo';
+  if (isWeakMedia(next.imageUrl)) {
+    next.imageUrl = next.fallbackImageUrl || next.imageUrl || '';
+    next.mediaKind = next.fallbackImageUrl ? 'photo' : next.mediaKind;
   }
   next.imageAlt = `${next.name} ${next.mediaKind === 'logo' ? 'logo' : 'aerial course image'}`;
   return next;
+}
+
+function isWeakMedia(value) {
+  const url = String(value || '');
+  return !url || /icons\.duckduckgo\.com|course-placeholder|course-photo-fallback/.test(url);
 }
 
 function isDuplicateCourse(a, b) {
@@ -248,15 +253,6 @@ function distanceKm(a, b) {
 
 function toRadians(value) {
   return (value * Math.PI) / 180;
-}
-
-function favicon(value) {
-  try {
-    const host = new URL(value).hostname;
-    return `https://icons.duckduckgo.com/ip3/${host}.ico`;
-  } catch {
-    return '';
-  }
 }
 
 function webSearchUrl(name, town, state) {

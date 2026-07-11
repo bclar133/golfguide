@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.golfcoursefinder",
+  "appName": "Golf Course Finder",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}

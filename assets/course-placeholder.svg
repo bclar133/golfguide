@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Golf course placeholder image</title>
+  <desc id="desc">Layered green fairways with a flag and sun.</desc>
+  <rect width="960" height="540" fill="#e3f3df"/>
+  <circle cx="784" cy="92" r="46" fill="#f5edd6"/>
+  <path d="M0 290c118-62 228-82 330-60 140 30 235 11 365-39 101-39 187-49 265-30v379H0z" fill="#79b66b"/>
+  <path d="M0 386c151-66 291-76 421-30 125 45 222 35 332-6 75-28 144-37 207-26v216H0z" fill="#2d8750"/>
+  <path d="M0 464c122-45 258-51 407-18 148 34 316 24 553-30v124H0z" fill="#12613a"/>
+  <path d="M495 133v190" stroke="#0b3d26" stroke-width="8" stroke-linecap="round"/>
+  <path d="M501 141l126 38-126 38z" fill="#b99538"/>
+  <ellipse cx="504" cy="326" rx="66" ry="17" fill="#062f1d" opacity=".2"/>
+  <path d="M0 0h960v540H0z" fill="none" stroke="#c7ddc1" stroke-width="2"/>
+</svg>

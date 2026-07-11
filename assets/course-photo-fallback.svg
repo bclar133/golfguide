@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Golf course photo fallback</title>
+  <desc id="desc">A photo-style view of an Australian golf fairway with trees and a flag.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#cfe6f0"/>
+      <stop offset="1" stop-color="#edf7eb"/>
+    </linearGradient>
+    <linearGradient id="fairway" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#6faf5f"/>
+      <stop offset="0.52" stop-color="#2d8750"/>
+      <stop offset="1" stop-color="#0f5a34"/>
+    </linearGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+  <rect width="960" height="540" fill="url(#sky)"/>
+  <circle cx="800" cy="95" r="48" fill="#f4e5b0" opacity=".95"/>
+  <path d="M0 265c128-38 246-44 354-18 128 31 247 20 354-31 86-40 170-50 252-28v352H0z" fill="#91bf78"/>
+  <path d="M0 360c142-54 282-64 421-31 102 24 201 26 297 6 90-19 170-24 242-14v219H0z" fill="url(#fairway)"/>
+  <path d="M315 540c40-95 89-164 147-207 64-48 137-74 218-78-60 76-97 171-112 285z" fill="#e5d8a8" opacity=".82"/>
+  <path d="M566 154v176" stroke="#0b3d26" stroke-width="7" stroke-linecap="round"/>
+  <path d="M571 160l121 36-121 37z" fill="#b99538"/>
+  <ellipse cx="568" cy="334" rx="58" ry="15" fill="#062f1d" opacity=".24"/>
+  <g opacity=".92">
+    <ellipse cx="118" cy="232" rx="70" ry="38" fill="#315f3d"/>
+    <rect x="108" y="228" width="16" height="96" rx="8" fill="#5b6d3d"/>
+    <ellipse cx="178" cy="238" rx="58" ry="31" fill="#3f7646"/>
+    <rect x="170" y="236" width="13" height="82" rx="7" fill="#5b6d3d"/>
+    <ellipse cx="828" cy="246" rx="82" ry="42" fill="#315f3d"/>
+    <rect x="817" y="242" width="18" height="104" rx="9" fill="#5b6d3d"/>
+  </g>
+  <path d="M0 0h960v540H0z" fill="none" stroke="#c7ddc1" stroke-width="2"/>
+  <rect width="960" height="540" fill="#ffffff" opacity=".06" filter="url(#soft)"/>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "name": "Aussie Golf Guide",
+  "short_name": "Aussie Golf",
+  "description": "Find golf courses around Australia on a map.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5fbf3",
+  "theme_color": "#0b3d26",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
