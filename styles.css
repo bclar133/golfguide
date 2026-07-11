@@ -1,6 +1,7 @@
 :root {
   color-scheme: light;
-  --font-main: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
   --pine: #042a19;
   --deep-green: #0a4228;
   --club-green: #12613a;
@@ -38,7 +39,7 @@ body {
     url("assets/grass-texture.svg") center / 340px 340px repeat,
     #0d4b2c;
   color: var(--ink);
-  font-family: var(--font-main);
+  font-family: var(--font-body);
 }
 
 button,
@@ -94,10 +95,14 @@ button {
 
 .app-header h1 {
   margin: 0;
-  max-width: 12ch;
-  font-size: 2.15rem;
-  line-height: 0.98;
-  font-weight: 800;
+  max-width: 13ch;
+  font-family: var(--font-heading);
+  font-size: 2.3rem;
+  font-weight: 850;
+  font-optical-sizing: auto;
+  line-height: 0.94;
+  text-wrap: balance;
+  text-shadow: 0 2px 0 rgba(4, 42, 25, 0.28);
 }
 
 .search-tools {
@@ -232,9 +237,12 @@ button:focus-visible {
 .course-title-row h2 {
   margin: 0;
   color: var(--pine);
-  font-size: 1.25rem;
-  line-height: 1.1;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 1.34rem;
+  font-weight: 780;
+  font-optical-sizing: auto;
+  line-height: 1.06;
+  text-wrap: balance;
 }
 
 .course-meta,
@@ -357,8 +365,11 @@ button:focus-visible {
 .results-heading h2 {
   margin: 0;
   color: var(--pine);
-  font-size: 1rem;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 1.14rem;
+  font-weight: 760;
+  font-optical-sizing: auto;
+  line-height: 1;
 }
 
 #resultCount {
@@ -428,9 +439,12 @@ button:focus-visible {
 .course-result h3 {
   margin: 0 0 5px;
   color: var(--pine);
-  font-size: 0.98rem;
+  font-family: var(--font-heading);
+  font-size: 1.04rem;
+  font-weight: 740;
+  font-optical-sizing: auto;
   line-height: 1.18;
-  font-weight: 800;
+  text-wrap: balance;
 }
 
 .course-result p {
@@ -591,8 +605,11 @@ button:focus-visible {
 .popup-card h3 {
   margin: 0 0 4px;
   color: var(--pine);
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 1.02rem;
+  font-weight: 760;
+  font-optical-sizing: auto;
+  line-height: 1.08;
 }
 
 .popup-card p {
@@ -672,8 +689,11 @@ button:focus-visible {
 .cluster-popup h3 {
   margin: 0 0 8px;
   color: var(--pine);
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 1.03rem;
+  font-weight: 760;
+  font-optical-sizing: auto;
+  line-height: 1.08;
 }
 
 .cluster-popup ul {
