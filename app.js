@@ -144,6 +144,7 @@
   var map;
   var popup;
   var statusTimer;
+  var CLUSTER_MAX_ZOOM = 6.8;
 
   init();
 
@@ -577,14 +578,14 @@
   }
 
   function buildClusters(items) {
-    if (!map || map.getZoom() >= 10.5) {
+    if (!map || map.getZoom() >= CLUSTER_MAX_ZOOM) {
       return items.map(function (course) {
         return createSingleCluster(course);
       });
     }
 
     var zoom = map.getZoom();
-    var radius = zoom < 4 ? 58 : zoom < 6 ? 52 : zoom < 8 ? 44 : 36;
+    var radius = zoom < 4 ? 50 : zoom < 5.4 ? 42 : 34;
     var maxDistanceKm = maxClusterDistanceKm(zoom);
     var projected = items.map(function (course) {
       return {
@@ -625,15 +626,12 @@
 
   function maxClusterDistanceKm(zoom) {
     if (zoom < 4) {
-      return 45;
+      return 42;
     }
-    if (zoom < 6) {
-      return 32;
+    if (zoom < 5.4) {
+      return 28;
     }
-    if (zoom < 8) {
-      return 18;
-    }
-    return 9;
+    return 14;
   }
 
   function createSingleCluster(course) {

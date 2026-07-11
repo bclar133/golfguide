@@ -504,8 +504,8 @@ button:focus-visible {
 .course-marker {
   position: absolute;
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -515,10 +515,10 @@ button:focus-visible {
 .course-marker::after {
   content: "";
   position: absolute;
-  left: 7px;
-  bottom: -4px;
-  width: 20px;
-  height: 7px;
+  left: 6px;
+  bottom: -3px;
+  width: 18px;
+  height: 6px;
   border-radius: 50%;
   background: rgba(4, 42, 25, 0.28);
   filter: blur(2.4px);
@@ -527,7 +527,7 @@ button:focus-visible {
 .marker-ball {
   position: absolute;
   inset: 1px;
-  border: 2.5px solid #05351f;
+  border: 2.25px solid #05351f;
   border-radius: 50%;
   background:
     radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.96) 0 4px, transparent 8px),
@@ -548,7 +548,7 @@ button:focus-visible {
 .marker-ball::after {
   content: "";
   position: absolute;
-  inset: 3px;
+  inset: 2.5px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -663,8 +663,8 @@ button:focus-visible {
 }
 
 .cluster-marker {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
 }
 
 .cluster-marker .marker-ball {
@@ -675,7 +675,7 @@ button:focus-visible {
 
 .marker-count {
   color: var(--deep-green);
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   font-weight: 800;
   line-height: 1;
   position: relative;
