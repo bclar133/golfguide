@@ -92,6 +92,19 @@ const mappedCourseOverrides = {
     summary: 'Private club course in Yeerongpilly, Brisbane.',
     aliases: ['The Brisbane Golf Club Inc.']
   },
+  'osm-way-51655135': {
+    id: 'bargara-golf-club',
+    name: 'Bargara Golf Club',
+    town: 'Bargara',
+    region: 'Bundaberg Region',
+    state: 'QLD',
+    holes: '18',
+    access: 'Golf club',
+    priceLevel: 3,
+    homepageUrl: 'https://bargaragolfclub.com.au/',
+    summary: 'Golf club at Bargara in the Bundaberg Region.',
+    aliases: ['Bargara Golf Course']
+  },
   'osm-way-193853562': {
     id: 'noosa-springs-golf-and-spa-resort',
     name: 'Noosa Springs Golf and Spa Resort',

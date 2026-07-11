@@ -11057,27 +11057,30 @@ window.GOLF_COURSES = [
     "id": "bargara-golf-club",
     "name": "Bargara Golf Club",
     "town": "Bargara",
-    "region": "Bargara",
+    "region": "Bundaberg Region",
     "state": "QLD",
     "coordinates": [
       152.461348,
       -24.820704
     ],
-    "holes": "",
-    "access": "Golf course",
+    "holes": "18",
+    "access": "Golf club",
     "priceLevel": 3,
-    "homepageUrl": "https://www.bargaragolf.com.au/",
+    "homepageUrl": "https://bargaragolfclub.com.au/",
     "bookingUrl": "",
     "imageUrl": "assets/course-media/bargara-golf-club-logo.png",
     "fallbackImageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/37434/60522",
     "imageAlt": "Bargara Golf Club logo",
     "mediaKind": "logo",
-    "summary": "Golf course in Bargara, QLD.",
+    "summary": "Golf club at Bargara in the Bundaberg Region.",
     "source": "OpenStreetMap",
     "sourceId": "osm-way-51655135",
     "sourceUrl": "https://www.openstreetmap.org/way/51655135",
     "webSearchUrl": "https://www.google.com/search?q=Bargara%20Golf%20Club%20Bargara%20QLD%20golf%20club%20website",
-    "imageSource": "img score 96"
+    "imageSource": "img score 96",
+    "aliases": [
+      "Bargara Golf Course"
+    ]
   },
   {
     "id": "bay-islands-golf-club",
