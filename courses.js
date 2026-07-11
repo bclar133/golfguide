@@ -34009,27 +34009,30 @@ window.GOLF_COURSES = [
     "id": "kalbarri-golf-club",
     "name": "Kalbarri Golf Club",
     "town": "Kalbarri",
-    "region": "Kalbarri",
+    "region": "Mid West",
     "state": "WA",
     "coordinates": [
       114.177483,
       -27.703499
     ],
-    "holes": "",
-    "access": "Golf course",
+    "holes": "18",
+    "access": "Golf club",
     "priceLevel": 3,
-    "homepageUrl": "http://www.kalbarrigolfclub.com.au/",
+    "homepageUrl": "https://www.kalbarrigolf.com.au/",
     "bookingUrl": "",
     "imageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/38020/53553",
     "fallbackImageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/38020/53553",
     "imageAlt": "Kalbarri Golf Club aerial course image",
     "mediaKind": "photo",
-    "summary": "Golf course in Kalbarri, WA.",
+    "summary": "Golf club at Kalbarri in Western Australia.",
     "source": "OpenStreetMap",
     "sourceId": "osm-way-242921871",
     "sourceUrl": "https://www.openstreetmap.org/way/242921871",
     "webSearchUrl": "https://www.google.com/search?q=Kalbarri%20Golf%20Club%20Kalbarri%20WA%20golf%20club%20website",
-    "imageSource": "aerial fallback"
+    "imageSource": "aerial fallback",
+    "aliases": [
+      "Kalbarri Golf Course"
+    ]
   },
   {
     "id": "kalgoorlie-golf-course",

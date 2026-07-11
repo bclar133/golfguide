@@ -158,6 +158,19 @@ const mappedCourseOverrides = {
     summary: 'Resort golf club in the Swan Valley.',
     aliases: ['The Vines Golf Course']
   },
+  'osm-way-242921871': {
+    id: 'kalbarri-golf-club',
+    name: 'Kalbarri Golf Club',
+    town: 'Kalbarri',
+    region: 'Mid West',
+    state: 'WA',
+    holes: '18',
+    access: 'Golf club',
+    priceLevel: 3,
+    homepageUrl: 'https://www.kalbarrigolf.com.au/',
+    summary: 'Golf club at Kalbarri in Western Australia.',
+    aliases: ['Kalbarri Golf Course']
+  },
   'osm-relation-11292090': {
     id: 'federal-golf-club',
     name: 'Federal Golf Club',
