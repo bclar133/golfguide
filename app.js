@@ -518,7 +518,7 @@
         '<div class="course-title-row">' +
           '<h2>' + escapeHtml(course.name) + '</h2>' +
           rankingBadge +
-          '<p class="course-meta">' + escapeHtml(course.town) + ', ' + escapeHtml(course.region) + ' - ' + escapeHtml(course.state) + '</p>' +
+          '<p class="course-meta">' + escapeHtml(courseLocationLine(course)) + '</p>' +
           '<p class="course-meta">' + escapeHtml(courseInfoLine(course)) + '</p>' +
         '</div>' +
         '<div class="price-row">' +
@@ -539,7 +539,7 @@
         '<button class="course-result-main" type="button" data-course-id="' + escapeAttribute(course.id) + '">' +
           '<span>' +
             '<h3>' + escapeHtml(course.name) + '</h3>' +
-            '<p>' + escapeHtml(course.town) + ' - ' + escapeHtml(course.region) + ' - ' + escapeHtml(course.state) + '</p>' +
+            '<p>' + escapeHtml(courseLocationLine(course)) + '</p>' +
             '<p>' + escapeHtml(courseInfoLine(course)) + '</p>' +
           '</span>' +
           '<span class="result-price">' + priceScale(course.priceLevel) + '</span>' +
@@ -751,7 +751,7 @@
           '<div>' +
             '<h3>' + escapeHtml(course.name) + '</h3>' +
             rankingBadge +
-            '<p>' + escapeHtml(course.town) + ' - ' + escapeHtml(course.state) + ' - ' + priceScale(course.priceLevel) + '</p>' +
+            '<p>' + escapeHtml(courseLocationLine(course)) + ' - ' + priceScale(course.priceLevel) + '</p>' +
             '<div class="popup-links">' + popupLinks + '</div>' +
           '</div>' +
         '</div>'
@@ -894,6 +894,19 @@
       links += popupLink(course.sourceUrl, "Map data");
     }
     return links;
+  }
+
+  function courseLocationLine(course) {
+    var seen = {};
+    return [course.town, course.region, course.state].filter(function (part) {
+      var value = String(part || "").trim();
+      var key = normalise(value);
+      if (!value || value === "Australia" || seen[key]) {
+        return false;
+      }
+      seen[key] = true;
+      return true;
+    }).join(" - ");
   }
 
   function courseInfoLine(course) {

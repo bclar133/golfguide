@@ -9,6 +9,24 @@ if (!match) {
 const courses = JSON.parse(match[1]);
 const cleaned = [];
 const sourceIds = new Set(courses.map((course) => course.sourceId).filter(Boolean));
+const stateNames = new Set([
+  'act',
+  'australian capital territory',
+  'nsw',
+  'new south wales',
+  'nt',
+  'northern territory',
+  'qld',
+  'queensland',
+  'sa',
+  'south australia',
+  'tas',
+  'tasmania',
+  'vic',
+  'victoria',
+  'wa',
+  'western australia'
+]);
 
 const supplementalReplacementSourceIds = {
   'supplemental-bonville-golf-resort': 'osm-way-784365355',
@@ -134,7 +152,7 @@ for (const originalCourse of courses) {
   if (isUnnamedGeneratedCourse(originalCourse)) continue;
   if (shouldDropSupplementalDuplicate(originalCourse)) continue;
 
-  const course = applyMappedCourseOverride(originalCourse);
+  const course = improveLocationLabels(applyMappedCourseOverride(originalCourse));
   const index = cleaned.findIndex((existing) => isDuplicateCourse(existing, course));
   if (index === -1) {
     cleaned.push(course);
@@ -173,6 +191,55 @@ function applyMappedCourseOverride(course) {
   }
   next.imageAlt = `${next.name} ${next.mediaKind === 'logo' ? 'logo' : 'aerial course image'}`;
   return next;
+}
+
+function improveLocationLabels(course) {
+  const next = { ...course };
+
+  if (isWeakPlace(next.town)) {
+    next.town = '';
+  }
+
+  if (isWeakPlace(next.region)) {
+    next.region = '';
+  }
+
+  next.summary = cleanSummary(next.summary, next);
+
+  next.webSearchUrl = webSearchUrl(next.name, next.town || next.region || next.state, next.state);
+  return next;
+}
+
+function cleanSummary(value, course) {
+  const summary = String(value || '').trim();
+  const generic = genericSummary(course);
+  if (!summary || /^Golf course in /i.test(summary)) return generic;
+  return summary.replace(/Golf course in [A-Z]{2,3}, [A-Z]{2,3}, [A-Z]{2,3}\./g, generic);
+}
+
+function genericSummary(course) {
+  const place = locationParts(course).join(', ');
+  return place ? `Golf course in ${place}.` : 'Golf course in Australia.';
+}
+
+function locationParts(course) {
+  const seen = new Set();
+  return [course.town, course.region, course.state].filter((part) => {
+    const value = String(part || '').trim();
+    const key = normaliseName(value);
+    if (!value || value === 'Australia' || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function isWeakPlace(value) {
+  const place = String(value || '').trim();
+  return !place || place === 'Australia' || isStateName(place);
+}
+
+function isStateName(value) {
+  return stateNames.has(normaliseName(value));
 }
 
 function isWeakMedia(value) {
