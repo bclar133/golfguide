@@ -504,8 +504,8 @@ button:focus-visible {
 .course-marker {
   position: absolute;
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -515,28 +515,28 @@ button:focus-visible {
 .course-marker::after {
   content: "";
   position: absolute;
-  left: 6px;
+  left: 5px;
   bottom: -3px;
-  width: 18px;
-  height: 6px;
+  width: 16px;
+  height: 5px;
   border-radius: 50%;
   background: rgba(4, 42, 25, 0.28);
-  filter: blur(2.4px);
+  filter: blur(2px);
 }
 
 .marker-ball {
   position: absolute;
   inset: 1px;
-  border: 2.25px solid #05351f;
+  border: 2px solid #05351f;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.96) 0 4px, transparent 8px),
-    radial-gradient(circle at 70% 78%, rgba(166, 190, 158, 0.5), transparent 22px),
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.96) 0 3.4px, transparent 7px),
+    radial-gradient(circle at 70% 78%, rgba(166, 190, 158, 0.5), transparent 18px),
     linear-gradient(145deg, #ffffff 0%, #f5fbf0 46%, #d6e8cf 100%);
   box-shadow:
-    inset -5px -6px 9px rgba(8, 57, 34, 0.16),
-    inset 3px 4px 6px rgba(255, 255, 255, 0.86),
-    0 5px 12px rgba(4, 42, 25, 0.28);
+    inset -4px -5px 7px rgba(8, 57, 34, 0.16),
+    inset 3px 3px 5px rgba(255, 255, 255, 0.86),
+    0 4px 10px rgba(4, 42, 25, 0.28);
   overflow: hidden;
   transition:
     border-color 160ms ease,
@@ -581,11 +581,11 @@ button:focus-visible {
 .course-marker.is-active .marker-ball,
 .course-marker:hover .marker-ball {
   border-color: var(--gold);
-  transform: scale(1.1);
+  transform: scale(1.08);
   box-shadow:
-    inset -5px -6px 9px rgba(8, 57, 34, 0.14),
-    inset 3px 4px 6px rgba(255, 255, 255, 0.9),
-    0 7px 16px rgba(4, 42, 25, 0.34);
+    inset -4px -5px 7px rgba(8, 57, 34, 0.14),
+    inset 3px 3px 5px rgba(255, 255, 255, 0.9),
+    0 5px 12px rgba(4, 42, 25, 0.34);
 }
 
 .popup-card {
@@ -663,8 +663,8 @@ button:focus-visible {
 }
 
 .cluster-marker {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .cluster-marker .marker-ball {
@@ -675,7 +675,7 @@ button:focus-visible {
 
 .marker-count {
   color: var(--deep-green);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   line-height: 1;
   position: relative;

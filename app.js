@@ -144,7 +144,7 @@
   var map;
   var popup;
   var statusTimer;
-  var CLUSTER_MAX_ZOOM = 6.8;
+  var CLUSTER_MAX_ZOOM = 5.6;
 
   init();
 
@@ -585,7 +585,7 @@
     }
 
     var zoom = map.getZoom();
-    var radius = zoom < 4 ? 50 : zoom < 5.4 ? 42 : 34;
+    var radius = zoom < 4 ? 42 : zoom < 4.9 ? 34 : 26;
     var maxDistanceKm = maxClusterDistanceKm(zoom);
     var projected = items.map(function (course) {
       return {
@@ -628,10 +628,10 @@
     if (zoom < 4) {
       return 42;
     }
-    if (zoom < 5.4) {
-      return 28;
+    if (zoom < 4.9) {
+      return 24;
     }
-    return 14;
+    return 10;
   }
 
   function createSingleCluster(course) {
