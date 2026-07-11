@@ -1,4 +1,4 @@
-const CACHE_NAME = "golf-course-finder-v39";
+const CACHE_NAME = "golf-course-finder-v40";
 const APP_SHELL = [
   "./",
   "index.html",

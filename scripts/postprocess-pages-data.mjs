@@ -144,6 +144,46 @@ const mappedCourseOverrides = {
     homepageUrl: 'https://www.vines.com.au/',
     summary: 'Resort golf club in the Swan Valley.',
     aliases: ['The Vines Golf Course']
+  },
+  'osm-relation-11292090': {
+    id: 'federal-golf-club',
+    name: 'Federal Golf Club',
+    town: 'Red Hill',
+    region: 'Canberra',
+    state: 'ACT',
+    holes: '18',
+    access: 'Golf club',
+    priceLevel: 3,
+    homepageUrl: 'https://federalgolf.com.au/',
+    bookingUrl: 'https://federal.miclub.com.au/guests/bookings/ViewPublicCalendar.msp?booking_resource_id=3000000',
+    summary: 'Championship golf club at Red Hill in Canberra.',
+    aliases: ['Federal Golf Club Canberra']
+  },
+  'osm-way-175659424': {
+    id: 'concord-golf-club',
+    name: 'Concord Golf Club',
+    town: 'Concord',
+    region: 'Sydney',
+    state: 'NSW',
+    holes: '18',
+    access: 'Private club',
+    priceLevel: 3,
+    homepageUrl: 'https://www.concordgolfclub.com.au/cms/',
+    summary: 'Private golf club in Concord, Sydney.',
+    aliases: ['The Concord Golf Club']
+  },
+  'osm-way-391304869': {
+    id: 'club-taree',
+    name: 'Club Taree',
+    town: 'Taree',
+    region: 'Manning Valley',
+    state: 'NSW',
+    holes: '18',
+    access: 'Golf club',
+    priceLevel: 3,
+    homepageUrl: 'https://www.clubtaree.com.au/golf',
+    summary: 'Golf course at Club Taree in the Manning Valley.',
+    aliases: ['Club Taree Golf', 'Club Taree Golf Course']
   }
 };
 

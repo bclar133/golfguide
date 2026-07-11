@@ -83,27 +83,31 @@ window.GOLF_COURSES = [
   {
     "id": "federal-golf-club",
     "name": "Federal Golf Club",
-    "town": "Garran",
-    "region": "",
+    "town": "Red Hill",
+    "region": "Canberra",
     "state": "ACT",
     "coordinates": [
       149.10935,
       -35.332897
     ],
-    "holes": "",
-    "access": "Golf course",
+    "holes": "18",
+    "access": "Golf club",
     "priceLevel": 3,
-    "homepageUrl": "",
-    "bookingUrl": "",
-    "imageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/39651/59912",
+    "homepageUrl": "https://federalgolf.com.au/",
+    "bookingUrl": "https://federal.miclub.com.au/guests/bookings/ViewPublicCalendar.msp?booking_resource_id=3000000",
+    "imageUrl": "assets/course-media/federal-golf-club-logo.png",
     "fallbackImageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/39651/59912",
-    "imageAlt": "Federal Golf Club aerial course image",
-    "mediaKind": "photo",
-    "summary": "Golf course in Garran, ACT.",
+    "imageAlt": "Federal Golf Club logo",
+    "mediaKind": "logo",
+    "summary": "Championship golf club at Red Hill in Canberra.",
     "source": "OpenStreetMap",
     "sourceId": "osm-relation-11292090",
     "sourceUrl": "https://www.openstreetmap.org/relation/11292090",
-    "webSearchUrl": "https://www.google.com/search?q=Federal%20Golf%20Club%20Garran%20ACT%20golf%20club%20website"
+    "webSearchUrl": "https://www.google.com/search?q=Federal%20Golf%20Club%20Red%20Hill%20ACT%20golf%20club%20website",
+    "imageSource": "existing local logo",
+    "aliases": [
+      "Federal Golf Club Canberra"
+    ]
   },
   {
     "id": "gold-creek-country-club",
@@ -2292,27 +2296,32 @@ window.GOLF_COURSES = [
   {
     "id": "club-taree",
     "name": "Club Taree",
-    "town": "Kolodong",
-    "region": "",
+    "town": "Taree",
+    "region": "Manning Valley",
     "state": "NSW",
     "coordinates": [
       152.447512,
       -31.894966
     ],
-    "holes": "",
-    "access": "Golf course",
+    "holes": "18",
+    "access": "Golf club",
     "priceLevel": 3,
-    "homepageUrl": "",
+    "homepageUrl": "https://www.clubtaree.com.au/golf",
     "bookingUrl": "",
-    "imageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/38899/60520",
+    "imageUrl": "assets/course-media/club-taree-golf-course-logo.png",
     "fallbackImageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/38899/60520",
-    "imageAlt": "Club Taree aerial course image",
-    "mediaKind": "photo",
-    "summary": "Golf course in Kolodong, NSW.",
+    "imageAlt": "Club Taree logo",
+    "mediaKind": "logo",
+    "summary": "Golf course at Club Taree in the Manning Valley.",
     "source": "OpenStreetMap",
     "sourceId": "osm-way-391304869",
     "sourceUrl": "https://www.openstreetmap.org/way/391304869",
-    "webSearchUrl": "https://www.google.com/search?q=Club%20Taree%20Kolodong%20NSW%20golf%20club%20website"
+    "webSearchUrl": "https://www.google.com/search?q=Club%20Taree%20Taree%20NSW%20golf%20club%20website",
+    "imageSource": "existing local logo",
+    "aliases": [
+      "Club Taree Golf",
+      "Club Taree Golf Course"
+    ]
   },
   {
     "id": "club-taree-golf-course",
@@ -2471,26 +2480,30 @@ window.GOLF_COURSES = [
     "id": "concord-golf-club",
     "name": "Concord Golf Club",
     "town": "Concord",
-    "region": "",
+    "region": "Sydney",
     "state": "NSW",
     "coordinates": [
       151.097085,
       -33.849967
     ],
-    "holes": "",
-    "access": "Golf course",
+    "holes": "18",
+    "access": "Private club",
     "priceLevel": 3,
-    "homepageUrl": "",
+    "homepageUrl": "https://www.concordgolfclub.com.au/cms/",
     "bookingUrl": "",
-    "imageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/39323/60274",
+    "imageUrl": "assets/course-media/concord-golf-club-logo.png",
     "fallbackImageUrl": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/16/39323/60274",
-    "imageAlt": "Concord Golf Club aerial course image",
-    "mediaKind": "photo",
-    "summary": "Golf course in Concord, NSW.",
+    "imageAlt": "Concord Golf Club logo",
+    "mediaKind": "logo",
+    "summary": "Private golf club in Concord, Sydney.",
     "source": "OpenStreetMap",
     "sourceId": "osm-way-175659424",
     "sourceUrl": "https://www.openstreetmap.org/way/175659424",
-    "webSearchUrl": "https://www.google.com/search?q=Concord%20Golf%20Club%20Concord%20NSW%20golf%20club%20website"
+    "webSearchUrl": "https://www.google.com/search?q=Concord%20Golf%20Club%20Concord%20NSW%20golf%20club%20website",
+    "imageSource": "existing local logo",
+    "aliases": [
+      "The Concord Golf Club"
+    ]
   },
   {
     "id": "condobolin-golf-club",

@@ -17,6 +17,7 @@ const args = parseArgs(runtimeArgs);
 const writeChanges = Boolean(args.write);
 const force = Boolean(args.force);
 const includeScreenshots = Boolean(args.screenshots);
+const localOnly = Boolean(args["local-only"]);
 const limit = args.limit ? Number(args.limit) : 0;
 const only = args.only ? String(args.only).toLowerCase() : "";
 const timeoutMs = args.timeout ? Number(args.timeout) : 22000;
@@ -60,7 +61,7 @@ function parseArgs(raw) {
     const value = raw[index];
     if (!value.startsWith("--")) continue;
     const key = value.slice(2);
-    if (key === "write" || key === "force" || key === "screenshots") {
+    if (key === "write" || key === "force" || key === "screenshots" || key === "local-only") {
       parsed[key] = true;
     } else if (key === "no-screenshots") {
       parsed.screenshots = false;
@@ -97,7 +98,10 @@ function shouldProcess(course) {
     const haystack = String(course.id + " " + course.name + " " + course.town + " " + course.region + " " + course.state).toLowerCase();
     if (!haystack.includes(only)) return false;
   }
-  if (!course.homepageUrl) return Boolean(only);
+  if (localOnly) return isWeakImage(course.imageUrl) && Boolean(findExistingAsset(course));
+  if (!course.homepageUrl) {
+    return Boolean(only) || (isWeakImage(course.imageUrl) && Boolean(findExistingAsset(course)));
+  }
   if (force) return true;
   return isWeakImage(course.imageUrl);
 }
@@ -396,7 +400,7 @@ async function launchBrowser() {
 async function captureVisibleLogo(course) {
   const playwrightCapture = await captureWithPlaywright(course);
   if (playwrightCapture) return playwrightCapture;
-  return captureWithBrowserCli(course);
+  return null;
 }
 
 async function captureWithPlaywright(course) {
@@ -412,6 +416,10 @@ async function captureWithPlaywright(course) {
     await page.goto(course.homepageUrl, { waitUntil: "domcontentloaded", timeout: timeoutMs });
     await page.waitForTimeout(1800);
     await dismissCommonOverlays(page);
+    const pageText = await page.evaluate(() => document.body ? document.body.innerText.slice(0, 3000) : "");
+    if (isBlockedBrowserPageText(pageText)) {
+      return null;
+    }
     const clip = await page.evaluate(() => {
       const selectors = ["img[alt*='logo' i]", "img[src*='logo' i]", "[class*='logo' i] img", "[id*='logo' i] img", "header img", "a[href='/'] img", "a[href='./'] img"];
       for (const selector of selectors) {
@@ -437,6 +445,10 @@ async function captureWithPlaywright(course) {
   } finally {
     await page.close().catch(() => {});
   }
+}
+
+function isBlockedBrowserPageText(value) {
+  return /checking the site connection security|requires cookies to be enabled|enable cookies|access denied|forbidden|verify you are human|captcha|your connection isn't private/i.test(String(value || ""));
 }
 
 async function captureWithBrowserCli(course) {
