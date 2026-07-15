@@ -10,7 +10,7 @@ const courseFile = path.join(root, "courses.js");
 const assetDir = path.join(root, "assets", "course-media");
 const reportDir = path.join(root, "course-media-reports");
 const bundledModules = "C:/Users/brent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules";
-const userAgent = "Mozilla/5.0 (compatible; AussieGolfGuideBot/1.0; +https://example.invalid/aussie-golf-guide)";
+const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
 
 const runtimeArgs = globalThis.COURSE_MEDIA_ARGS || (typeof process !== "undefined" ? process.argv.slice(2) : []);
 const args = parseArgs(runtimeArgs);
@@ -19,6 +19,7 @@ const force = Boolean(args.force);
 const includeScreenshots = Boolean(args.screenshots);
 const localOnly = Boolean(args["local-only"]);
 const limit = args.limit ? Number(args.limit) : 0;
+const concurrency = Math.max(1, args.concurrency ? Number(args.concurrency) : 1);
 const only = args.only ? String(args.only).toLowerCase() : "";
 const timeoutMs = args.timeout ? Number(args.timeout) : 22000;
 
@@ -32,17 +33,22 @@ const report = [];
 let processed = 0;
 let updated = 0;
 let browser = null;
+let browserPromise = null;
 let chromium = null;
 
 try {
-  for (const course of courses) {
-    if (!shouldProcess(course)) continue;
-    if (limit && processed >= limit) break;
-    processed += 1;
-    const result = await enrichCourse(course);
-    report.push(result);
-    if (result.updated) updated += 1;
-  }
+  const selectedCourses = courses.filter(shouldProcess).slice(0, limit || undefined);
+  processed = selectedCourses.length;
+  let nextIndex = 0;
+  await Promise.all(Array.from({ length: Math.min(concurrency, selectedCourses.length) }, async () => {
+    while (nextIndex < selectedCourses.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      const result = await enrichCourse(selectedCourses[index]);
+      report[index] = result;
+      if (result.updated) updated += 1;
+    }
+  }));
 } finally {
   if (browser) await browser.close();
 }
@@ -199,7 +205,7 @@ async function enrichCourse(course) {
       result.fetchError = fetchError;
       result.candidateCount = 0;
     }
-    if (includeScreenshots && html && !isClearlyDeadPage(fetchError, html)) {
+    if (includeScreenshots && !isClearlyDeadPage(fetchError, html)) {
       const screenshot = await captureVisibleLogo(course);
       if (screenshot) {
         updateCourseImage(course, screenshot, "logo", "website screenshot crop");
@@ -400,16 +406,15 @@ async function launchBrowser() {
 async function captureVisibleLogo(course) {
   const playwrightCapture = await captureWithPlaywright(course);
   if (playwrightCapture) return playwrightCapture;
-  return null;
+  return captureWithBrowserCli(course);
 }
 
 async function captureWithPlaywright(course) {
-  if (!browser) {
-    try {
-      browser = await launchBrowser();
-    } catch {
-      return null;
-    }
+  try {
+    if (!browserPromise) browserPromise = launchBrowser();
+    browser = await browserPromise;
+  } catch {
+    return null;
   }
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   try {
@@ -421,19 +426,52 @@ async function captureWithPlaywright(course) {
       return null;
     }
     const clip = await page.evaluate(() => {
-      const selectors = ["img[alt*='logo' i]", "img[src*='logo' i]", "[class*='logo' i] img", "[id*='logo' i] img", "header img", "a[href='/'] img", "a[href='./'] img"];
+      const selectors = [
+        "img[alt*='logo' i]",
+        "img[src*='logo' i]",
+        "[class*='logo' i] img",
+        "[id*='logo' i] img",
+        ".custom-logo-link",
+        "[class*='logo' i]",
+        "[id*='logo' i]",
+        ".site-title",
+        ".navbar-brand",
+        "header img",
+        "header svg",
+        "header a[href='/']",
+        "header a[href='./']"
+      ];
       for (const selector of selectors) {
         const elements = Array.from(document.querySelectorAll(selector));
         for (const element of elements) {
           const rect = element.getBoundingClientRect();
           const style = window.getComputedStyle(element);
-          if (rect.width >= 50 && rect.height >= 20 && rect.top >= -20 && rect.top <= 360 && style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0.1) {
+          if (rect.width >= 50 && rect.height >= 20 && rect.width <= 620 && rect.height <= 260 && rect.top >= -20 && rect.top <= 360 && style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0.1) {
             const padding = 16;
-            return { x: Math.max(0, rect.left - padding), y: Math.max(0, rect.top - padding), width: Math.min(window.innerWidth, rect.width + padding * 2), height: Math.min(window.innerHeight, rect.height + padding * 2), selector };
+            return {
+              x: Math.max(0, rect.left - padding),
+              y: Math.max(0, rect.top - padding),
+              width: Math.min(window.innerWidth - Math.max(0, rect.left - padding), rect.width + padding * 2),
+              height: Math.min(window.innerHeight - Math.max(0, rect.top - padding), rect.height + padding * 2),
+              selector
+            };
           }
         }
       }
-      return { x: 0, y: 0, width: Math.min(520, window.innerWidth), height: Math.min(180, window.innerHeight), selector: "top-left header crop" };
+      const header = document.querySelector("header, .site-header, .navbar, .main-header, .header");
+      if (header) {
+        const rect = header.getBoundingClientRect();
+        if (rect.width >= 160 && rect.height >= 50 && rect.top <= 120) {
+          return {
+            x: Math.max(0, rect.left),
+            y: Math.max(0, rect.top),
+            width: Math.min(620, window.innerWidth - Math.max(0, rect.left), rect.width),
+            height: Math.min(220, window.innerHeight - Math.max(0, rect.top), rect.height),
+            selector: "header crop"
+          };
+        }
+      }
+      return { x: 0, y: 0, width: Math.min(620, window.innerWidth), height: Math.min(220, window.innerHeight), selector: "top-of-site crop" };
     });
     const basename = slugify(course.name) + "-website-crop.png";
     const outputPath = path.join(assetDir, basename);
@@ -457,6 +495,8 @@ async function captureWithBrowserCli(course) {
   const basename = slugify(course.name) + "-website-crop.png";
   const outputPath = path.join(assetDir, basename);
   try {
+    const dom = await runBrowserDump(browserPath, course.homepageUrl);
+    if (isBrowserCliErrorPage(dom) || isBlockedBrowserPageText(dom)) return null;
     await runBrowserScreenshot(browserPath, course.homepageUrl, outputPath);
     const stats = fs.statSync(outputPath);
     if (stats.size < 5000) {
@@ -467,6 +507,10 @@ async function captureWithBrowserCli(course) {
   } catch {
     return null;
   }
+}
+
+function isBrowserCliErrorPage(value) {
+  return /main-frame-error|DNS_PROBE|ERR_[A-Z_]+|This site can't be reached|Hmmm…? can't reach this page|reload-button|Check if there is a typo|web server is down|error code 52\d|website is currently unavailable|page you were looking for doesn't exist|page may have moved|website coming soon|domain is registered|may be for sale|buy this domain|domain parking|parked domain|casino|pokies|top casinos/i.test(String(value || ""));
 }
 
 function findBrowserExecutable() {
@@ -487,7 +531,8 @@ function runBrowserScreenshot(browserPath, url, outputPath) {
       "--hide-scrollbars",
       "--no-first-run",
       "--no-default-browser-check",
-      "--window-size=1280,520",
+      "--window-size=820,260",
+      "--virtual-time-budget=4500",
       "--screenshot=" + outputPath,
       url
     ], { stdio: "ignore" });
@@ -503,6 +548,39 @@ function runBrowserScreenshot(browserPath, url, outputPath) {
       clearTimeout(timer);
       if (code === 0 && fs.existsSync(outputPath)) resolve();
       else reject(new Error("Browser screenshot failed"));
+    });
+  });
+}
+
+function runBrowserDump(browserPath, url) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(browserPath, [
+      "--headless=new",
+      "--disable-gpu",
+      "--hide-scrollbars",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--window-size=820,260",
+      "--virtual-time-budget=4500",
+      "--dump-dom",
+      url
+    ], { stdio: ["ignore", "pipe", "ignore"] });
+    let output = "";
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error("Browser DOM dump timed out"));
+    }, timeoutMs);
+    child.stdout.on("data", (chunk) => {
+      output += chunk.toString("utf8");
+      if (output.length > 1_000_000) output = output.slice(-1_000_000);
+    });
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on("exit", () => {
+      clearTimeout(timer);
+      resolve(output);
     });
   });
 }
