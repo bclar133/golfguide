@@ -54,7 +54,7 @@ for (const [type, entries] of Object.entries(batches)) {
         report.push(row);
         continue;
       }
-      const normalised = normaliseUrl(candidate.value);
+      const normalised = normaliseOnlinePresence(candidate.value, candidate.key);
       if (!normalised) {
         row.status = "invalid-url";
         row.rawUrl = candidate.value;
@@ -189,7 +189,7 @@ function decodeXml(value) {
 }
 
 function bestWebsiteTag(tags) {
-  const keys = ["website", "contact:website", "url", "operator:website", "brand:website"];
+  const keys = ["website", "contact:website", "url", "operator:website", "brand:website", "contact:facebook", "facebook", "social:facebook"];
   for (const key of keys) {
     if (tags[key]) return { key, value: tags[key] };
   }
@@ -204,9 +204,14 @@ function pickWebsiteTags(tags) {
   return picked;
 }
 
-function normaliseUrl(value) {
+function normaliseOnlinePresence(value, key) {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
+  if (/facebook/i.test(key) && !/^https?:\/\//i.test(trimmed)) {
+    const handle = trimmed.replace(/^@/, "").replace(/^facebook\.com\//i, "").replace(/^\/+/, "");
+    if (!handle) return "";
+    return "https://www.facebook.com/" + handle;
+  }
   const first = trimmed.split(/\s+/)[0].replace(/[),.;]+$/g, "");
   const withProtocol = /^https?:\/\//i.test(first) ? first : "https://" + first;
   try {

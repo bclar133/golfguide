@@ -176,6 +176,7 @@ function scoreSearchResult(result, course) {
   if (tokens.some((token) => host.includes(token)) && /golf/.test(host)) score += 36;
   if (pathValue.length <= 1 && tokens.some((token) => host.includes(token))) score += 14;
   if (/\.(com\.au|org\.au|net\.au|golf|club)$/.test(host)) score += 8;
+  if (/facebook\.com/i.test(result.url) && isSocialProfileCandidate(result, course)) score += 45;
   if (/facebook\.com|1golf\.com\.au|miClub|miclub|bookatee|golfbox/i.test(result.url)) score += 4;
   if (/gov\.au|council|qld\.gov|nsw\.gov|vic\.gov|sa\.gov|wa\.gov|tas\.gov|nt\.gov|act\.gov/i.test(result.url)) score += 6;
   if (/tripadvisor|top100|golffinder|findglocal|superpages|yellowpages|australia247|truelocal|golf\.org\.au|golf\.com\.au|queensland\.com|brisbanegolfcourses|chronogolf|bluegolf|whereis|clubsandpubsnearme|schoolandcollegelistings|playsport|visit|tourism/i.test(result.url)) score -= 55;
@@ -185,6 +186,7 @@ function scoreSearchResult(result, course) {
 
 async function verifyCandidate(candidate, course) {
   try {
+    if (isSocialProfileCandidate(candidate, course)) return { ok: true, reason: "social-profile-match" };
     const html = await fetchText(candidate.url, "text/html,application/xhtml+xml,*/*;q=0.8");
     if (isDeadPage(html)) return { ok: false, reason: "dead-page" };
     const text = normalise(stripTags(html).slice(0, 25000));
@@ -203,6 +205,25 @@ async function verifyCandidate(candidate, course) {
     } catch {}
     return { ok: false, reason: "fetch-failed" };
   }
+}
+
+function isSocialProfileCandidate(candidate, course) {
+  let url;
+  try {
+    url = new URL(candidate.url);
+  } catch {
+    return false;
+  }
+  const host = url.hostname.toLowerCase();
+  if (!/(\b|\.)(facebook|fb)\.com$/i.test(host)) return false;
+  const pathValue = normalise(url.pathname);
+  if (!pathValue || /login|sharer|share|plugins|photo|photos|videos|watch|posts|permalink/.test(pathValue)) return false;
+  const tokens = courseTokens(course);
+  const combined = normalise([candidate.title, candidate.snippet, url.pathname].filter(Boolean).join(" "));
+  const name = normalise(course.name);
+  if (combined.includes(name)) return true;
+  const matched = tokens.filter((token) => combined.includes(token));
+  return matched.length >= Math.min(2, tokens.length);
 }
 
 async function fetchText(url, accept) {
@@ -247,7 +268,7 @@ function decodeHtml(value) {
 }
 
 function webSearchUrl(name, town, state) {
-  return "https://www.google.com/search?q=" + encodeURIComponent(`${name} ${town} ${state} golf club website`);
+  return "https://www.google.com/search?q=" + encodeURIComponent(`${name} ${town} ${state} golf club website Facebook`);
 }
 
 function timestamp() {

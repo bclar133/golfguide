@@ -859,7 +859,7 @@
   function courseLinks(course) {
     var links = "";
     if (course.homepageUrl) {
-      links += linkButton(course.homepageUrl, "Website", false);
+      links += linkButton(course.homepageUrl, onlinePresenceLabel(course.homepageUrl), false);
     } else if (course.webSearchUrl) {
       links += linkButton(course.webSearchUrl, "Find online", false);
     }
@@ -878,7 +878,7 @@
   function coursePopupLinks(course) {
     var links = "";
     if (course.homepageUrl) {
-      links += popupLink(course.homepageUrl, "Website");
+      links += popupLink(course.homepageUrl, onlinePresenceLabel(course.homepageUrl));
     } else if (course.webSearchUrl) {
       links += popupLink(course.webSearchUrl, "Find online");
     }
@@ -892,6 +892,25 @@
       links += popupLink(course.sourceUrl, "Map data");
     }
     return links;
+  }
+
+  function onlinePresenceLabel(url) {
+    var host = "";
+    try {
+      host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+    } catch (error) {
+      return "Website";
+    }
+    if (host.indexOf("facebook.com") !== -1 || host.indexOf("fb.com") !== -1) return "Facebook";
+    if (host.indexOf("instagram.com") !== -1) return "Instagram";
+    if (host.indexOf(".gov.au") !== -1 || host.indexOf("council") !== -1) return "Council page";
+    if (isGolfAustraliaHost(host)) return "Golf profile";
+    if (host.indexOf("golfer.com.au") !== -1 || host.indexOf("top100golfcourses.com") !== -1) return "Directory";
+    return "Website";
+  }
+
+  function isGolfAustraliaHost(host) {
+    return host === "golf.org.au" || host.endsWith(".golf.org.au") || host === "golf.com.au" || host.endsWith(".golf.com.au");
   }
 
   function courseLocationLine(course) {

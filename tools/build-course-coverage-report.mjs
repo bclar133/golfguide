@@ -33,8 +33,13 @@ const report = {
   generatedAt: new Date().toISOString(),
   totalCourses: courses.length,
   summary: {
-    homepage: courses.filter((course) => course.homepageUrl).length,
-    missingHomepage: courses.filter((course) => !course.homepageUrl).length,
+    onlinePresence: courses.filter((course) => course.homepageUrl).length,
+    missingOnlinePresence: courses.filter((course) => !course.homepageUrl).length,
+    websites: courses.filter((course) => course.homepageUrl && onlinePresenceKind(course.homepageUrl) === "website").length,
+    facebook: courses.filter((course) => course.homepageUrl && onlinePresenceKind(course.homepageUrl) === "facebook").length,
+    councilOrGovernment: courses.filter((course) => course.homepageUrl && onlinePresenceKind(course.homepageUrl) === "council").length,
+    golfProfiles: courses.filter((course) => course.homepageUrl && onlinePresenceKind(course.homepageUrl) === "golf-profile").length,
+    directories: courses.filter((course) => course.homepageUrl && onlinePresenceKind(course.homepageUrl) === "directory").length,
     logo: courses.filter((course) => course.mediaKind === "logo").length,
     homepageNoLogo: courses.filter((course) => course.homepageUrl && course.mediaKind !== "logo").length,
     weakHomepageMedia: courses.filter((course) => course.homepageUrl && isWeakImage(course.imageUrl)).length
@@ -79,6 +84,24 @@ function queueRow(course) {
 function isWeakImage(url) {
   const value = String(url || "");
   return !value || value.includes("icons.duckduckgo.com") || value.includes("World_Imagery") || value.includes("course-photo-fallback.svg");
+}
+
+function onlinePresenceKind(value) {
+  let host = "";
+  try {
+    host = new URL(value).hostname.replace(/^www\./, "").toLowerCase();
+  } catch {
+    return "website";
+  }
+  if (host.includes("facebook.com") || host.includes("fb.com")) return "facebook";
+  if (host.includes(".gov.au") || host.includes("council")) return "council";
+  if (isGolfAustraliaHost(host)) return "golf-profile";
+  if (host.includes("golfer.com.au") || host.includes("top100golfcourses.com")) return "directory";
+  return "website";
+}
+
+function isGolfAustraliaHost(host) {
+  return host === "golf.org.au" || host.endsWith(".golf.org.au") || host === "golf.com.au" || host.endsWith(".golf.com.au");
 }
 
 function timestamp() {

@@ -33,7 +33,7 @@ Known useful sources:
 
 ## Per-State Audit Steps
 
-- [ ] Export the current app list for the state with name, town, region, coordinates, homepage URL, booking URL, image URL, source, and source URL.
+- [ ] Export the current app list for the state with name, town, region, coordinates, online-presence URL, booking URL, image URL, source, and source URL.
 - [ ] Capture the independent directory list for the state from the best available official source.
 - [ ] Normalize names before matching: remove punctuation, lowercase, and compare variants such as Golf Club, Golf Course, Country Club, Links, Resort, and Public Golf Course.
 - [ ] Match exact name and town combinations first.
@@ -42,7 +42,8 @@ Known useful sources:
 - [ ] Classify every source record as one of: matched, missing, possible duplicate, closed, non-course facility, indoor/simulator only, driving range only, or needs manual review.
 - [ ] For every missing course candidate, verify it with at least one official or council/source page before adding it.
 - [ ] Add verified missing courses to the supplemental data path with source URL and checked date.
-- [ ] Add homepage and booking links where available; otherwise add a targeted web search fallback.
+- [ ] Add an official online presence where available: club website first, then Facebook page/group, council page, resort/venue page, state golf profile, or credible directory as a last resort.
+- [ ] Add booking links where available; otherwise add a targeted web search fallback.
 - [ ] Add a logo where a real website exists; otherwise keep a course photo/fallback image.
 - [ ] Review map placement at national, state, regional, and close zoom levels.
 - [ ] Record any source limitations, such as directories that include indoor venues, social clubs, retired courses, or clubs without a physical course.
@@ -55,7 +56,7 @@ A course should be accepted into the app when it has:
 - [ ] State and town/locality.
 - [ ] Coordinates placed on the course, not just the town centre.
 - [ ] At least one source URL.
-- [ ] Homepage, booking URL, or targeted web-search fallback.
+- [ ] Online presence, booking URL, or targeted web-search fallback.
 - [ ] Access/holes/price fields set to best-known values or left intentionally blank when unknown.
 - [ ] Logo/photo/fallback image behavior checked.
 
@@ -65,7 +66,7 @@ When a user reports a missing course:
 
 - [ ] Search the current app data by course name, town, and nearby towns.
 - [ ] Check OpenStreetMap for alternate tags such as `sport=golf`, `golf=hole`, `leisure=pitch`, and named ways without `leisure=golf_course`.
-- [ ] Verify the official website, booking page, council page, or credible public source.
+- [ ] Verify the official website, Facebook page/group, booking page, council page, or credible public source.
 - [ ] Add the course as a supplemental record if it is absent from the bulk import.
 - [ ] Re-test search, selected card, popup link, and marker position.
 - [ ] Add the report to the audit notes so repeated gaps reveal source weaknesses.
