@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
@@ -18,10 +19,31 @@ const writeChanges = Boolean(args.write);
 const force = Boolean(args.force);
 const includeScreenshots = Boolean(args.screenshots);
 const localOnly = Boolean(args["local-only"]);
+const missingLogo = Boolean(args["missing-logo"]);
 const limit = args.limit ? Number(args.limit) : 0;
 const concurrency = Math.max(1, args.concurrency ? Number(args.concurrency) : 1);
 const only = args.only ? String(args.only).toLowerCase() : "";
 const timeoutMs = args.timeout ? Number(args.timeout) : 22000;
+const screenshotDenylist = new Set([
+  "avalon-golf-course",
+  "barossa-valley-golf-club",
+  "birdsville-dunes-golf-club",
+  "capital-golf-club",
+  "cervantes-golf-club",
+  "edithvale-public-golf-course",
+  "esk-country-golf-club",
+  "georgetown-golf-club-south-australia",
+  "golf-west-driving-range-and-minigolf",
+  "heathmont-golf-park",
+  "melville-golf-centre",
+  "racv-healesville-country-club",
+  "welaregang-country-golf-club",
+  "trentham-golf-club",
+  "yarra-valley-country-club"
+]);
+const downloadDenylist = new Set([
+  "cervantes-golf-club"
+]);
 
 fs.mkdirSync(assetDir, { recursive: true });
 fs.mkdirSync(reportDir, { recursive: true });
@@ -67,7 +89,7 @@ function parseArgs(raw) {
     const value = raw[index];
     if (!value.startsWith("--")) continue;
     const key = value.slice(2);
-    if (key === "write" || key === "force" || key === "screenshots" || key === "local-only") {
+    if (key === "write" || key === "force" || key === "screenshots" || key === "local-only" || key === "missing-logo") {
       parsed[key] = true;
     } else if (key === "no-screenshots") {
       parsed.screenshots = false;
@@ -105,6 +127,7 @@ function shouldProcess(course) {
     if (!haystack.includes(only)) return false;
   }
   if (localOnly) return isWeakImage(course.imageUrl) && Boolean(findExistingAsset(course));
+  if (missingLogo) return Boolean(course.homepageUrl) && course.mediaKind !== "logo";
   if (!course.homepageUrl) {
     return Boolean(only) || (isWeakImage(course.imageUrl) && Boolean(findExistingAsset(course)));
   }
@@ -171,7 +194,7 @@ function mediaTokens(value) {
 async function enrichCourse(course) {
   const result = { id: course.id, name: course.name, homepageUrl: course.homepageUrl || "", status: "pending", updated: false };
   const existingAsset = findExistingAsset(course);
-  if (existingAsset) {
+  if (existingAsset && (!missingLogo || existingAsset.kind !== "image")) {
     const mediaKind = existingAsset.kind === "image" ? "photo" : "logo";
     updateCourseImage(course, existingAsset, mediaKind, "existing local " + existingAsset.kind);
     Object.assign(result, { status: "existing-local-asset", updated: true, imageUrl: existingAsset.relativePath, sourceReason: existingAsset.kind });
@@ -193,6 +216,8 @@ async function enrichCourse(course) {
       const candidates = discoverImageCandidates(html, course.homepageUrl, course);
       result.candidateCount = candidates.length;
       for (const candidate of candidates) {
+        if (downloadDenylist.has(course.id)) continue;
+        if (missingLogo && candidate.reason.includes("image")) continue;
         const saved = await downloadCandidate(candidate, course);
         if (saved) {
           const mediaKind = candidate.reason.includes("image") ? "photo" : "logo";
@@ -205,7 +230,7 @@ async function enrichCourse(course) {
       result.fetchError = fetchError;
       result.candidateCount = 0;
     }
-    if (includeScreenshots && !isClearlyDeadPage(fetchError, html)) {
+    if (includeScreenshots && !screenshotDenylist.has(course.id) && !isClearlyDeadPage(fetchError, html)) {
       const screenshot = await captureVisibleLogo(course);
       if (screenshot) {
         updateCourseImage(course, screenshot, "logo", "website screenshot crop");
@@ -406,6 +431,8 @@ async function launchBrowser() {
 async function captureVisibleLogo(course) {
   const playwrightCapture = await captureWithPlaywright(course);
   if (playwrightCapture) return playwrightCapture;
+  const browserCdpCapture = await captureWithBrowserCdp(course);
+  if (browserCdpCapture) return browserCdpCapture;
   return captureWithBrowserCli(course);
 }
 
@@ -509,8 +536,225 @@ async function captureWithBrowserCli(course) {
   }
 }
 
+async function captureWithBrowserCdp(course) {
+  const browserPath = findBrowserExecutable();
+  if (!browserPath) return null;
+  const basename = slugify(course.name) + "-website-crop.png";
+  const outputPath = path.join(assetDir, basename);
+  const debugPort = 9200 + Math.floor(Math.random() * 20000);
+  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "course-logo-browser-"));
+  const child = spawn(browserPath, [
+    "--headless=new",
+    "--disable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-networking",
+    "--window-size=1280,900",
+    "--user-agent=" + userAgent,
+    "--remote-debugging-port=" + debugPort,
+    "--user-data-dir=" + userDataDir,
+    "about:blank"
+  ], { stdio: "ignore" });
+  let cdp = null;
+  try {
+    await waitForBrowser(debugPort);
+    const target = await openBrowserTarget(debugPort, course.homepageUrl);
+    if (!target.webSocketDebuggerUrl) return null;
+    cdp = await connectCdp(target.webSocketDebuggerUrl);
+    await cdp.send("Page.enable");
+    await cdp.send("Runtime.enable");
+    await delay(Math.min(6500, Math.max(2800, Math.floor(timeoutMs / 3))));
+    await cdp.send("Runtime.evaluate", { expression: dismissOverlayExpression(), awaitPromise: true });
+    const pageText = await cdp.send("Runtime.evaluate", {
+      expression: "document.body ? document.body.innerText.slice(0, 3000) : ''",
+      returnByValue: true
+    });
+    if (isBrowserCliErrorPage(pageText.result?.value) || isBlockedBrowserPageText(pageText.result?.value)) return null;
+    const clipResult = await cdp.send("Runtime.evaluate", {
+      expression: logoClipExpression(),
+      returnByValue: true
+    });
+    const clip = clipResult.result?.value;
+    if (!clip || clip.width < 80 || clip.height < 35) return null;
+    const screenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+      clip: {
+        x: Math.max(0, Math.round(clip.x)),
+        y: Math.max(0, Math.round(clip.y)),
+        width: Math.max(80, Math.round(clip.width)),
+        height: Math.max(40, Math.round(clip.height)),
+        scale: 1
+      }
+    });
+    fs.writeFileSync(outputPath, Buffer.from(screenshot.data, "base64"));
+    const stats = fs.statSync(outputPath);
+    if (stats.size < 5000) {
+      fs.unlinkSync(outputPath);
+      return null;
+    }
+    return { path: outputPath, relativePath: "assets/course-media/" + basename, reason: clip.selector || "browser logo crop" };
+  } catch {
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+    return null;
+  } finally {
+    if (cdp) cdp.close();
+    try {
+      child.kill();
+    } catch {}
+    try {
+      fs.rmSync(userDataDir, { recursive: true, force: true });
+    } catch {}
+  }
+}
+
+function waitForBrowser(port) {
+  const deadline = Date.now() + Math.min(timeoutMs, 10000);
+  return new Promise((resolve, reject) => {
+    const check = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:" + port + "/json/version", { signal: AbortSignal.timeout(1200) });
+        if (response.ok) {
+          resolve();
+          return;
+        }
+      } catch {}
+      if (Date.now() > deadline) reject(new Error("Browser debug port did not open"));
+      else setTimeout(check, 250);
+    };
+    check();
+  });
+}
+
+async function openBrowserTarget(port, url) {
+  const endpoint = "http://127.0.0.1:" + port + "/json/new?" + encodeURIComponent(url);
+  let response = await fetch(endpoint, { method: "PUT", signal: AbortSignal.timeout(3000) });
+  if (!response.ok) response = await fetch(endpoint, { signal: AbortSignal.timeout(3000) });
+  if (!response.ok) throw new Error("Could not open browser target");
+  return response.json();
+}
+
+function connectCdp(webSocketUrl) {
+  return new Promise((resolve, reject) => {
+    const socket = new WebSocket(webSocketUrl);
+    const pending = new Map();
+    let nextId = 1;
+    const startupTimer = setTimeout(() => reject(new Error("CDP connection timed out")), 5000);
+    socket.addEventListener("open", () => {
+      clearTimeout(startupTimer);
+      resolve({
+        send(method, params = {}) {
+          const id = nextId;
+          nextId += 1;
+          socket.send(JSON.stringify({ id, method, params }));
+          return new Promise((commandResolve, commandReject) => {
+            const timer = setTimeout(() => {
+              pending.delete(id);
+              commandReject(new Error(method + " timed out"));
+            }, timeoutMs);
+            pending.set(id, { resolve: commandResolve, reject: commandReject, timer });
+          });
+        },
+        close() {
+          socket.close();
+        }
+      });
+    });
+    socket.addEventListener("message", (event) => {
+      const message = JSON.parse(event.data);
+      if (!message.id || !pending.has(message.id)) return;
+      const item = pending.get(message.id);
+      pending.delete(message.id);
+      clearTimeout(item.timer);
+      if (message.error) item.reject(new Error(message.error.message || "CDP command failed"));
+      else item.resolve(message.result || {});
+    });
+    socket.addEventListener("error", () => {
+      clearTimeout(startupTimer);
+      reject(new Error("CDP connection failed"));
+    });
+  });
+}
+
+function dismissOverlayExpression() {
+  return `new Promise((resolve) => {
+    const labels = ['accept', 'i agree', 'agree', 'close', 'no thanks', 'got it'];
+    for (const element of Array.from(document.querySelectorAll('button, a, [role="button"]'))) {
+      const text = (element.innerText || element.getAttribute('aria-label') || '').trim().toLowerCase();
+      if (labels.some((label) => text === label || text.includes(label))) {
+        try { element.click(); } catch {}
+      }
+    }
+    setTimeout(resolve, 400);
+  })`;
+}
+
+function logoClipExpression() {
+  return `(() => {
+    const selectors = [
+      "img[alt*='logo' i]",
+      "img[src*='logo' i]",
+      "img[class*='logo' i]",
+      "img[id*='logo' i]",
+      "[class*='logo' i] img",
+      "[id*='logo' i] img",
+      ".custom-logo-link",
+      "[class*='brand' i] img",
+      "[class*='navbar-brand' i]",
+      "[class*='site-logo' i]",
+      "[class*='logo' i]",
+      "[id*='logo' i]",
+      ".site-title",
+      ".navbar-brand",
+      "header img",
+      "header svg"
+    ];
+    const usableRect = (element) => {
+      const rect = element.getBoundingClientRect();
+      const style = window.getComputedStyle(element);
+      if (rect.width < 50 || rect.height < 20 || rect.width > 680 || rect.height > 320) return null;
+      if (rect.top < -30 || rect.top > 420 || rect.left < -30 || rect.left > window.innerWidth - 20) return null;
+      if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity || 1) < 0.1) return null;
+      const padding = 18;
+      const x = Math.max(0, rect.left - padding);
+      const y = Math.max(0, rect.top - padding);
+      return {
+        x,
+        y,
+        width: Math.min(window.innerWidth - x, rect.width + padding * 2),
+        height: Math.min(window.innerHeight - y, rect.height + padding * 2)
+      };
+    };
+    for (const selector of selectors) {
+      for (const element of Array.from(document.querySelectorAll(selector))) {
+        const rect = usableRect(element);
+        if (rect) return { ...rect, selector };
+      }
+    }
+    const header = document.querySelector("header, .site-header, .navbar, .main-header, .header, .masthead");
+    if (header) {
+      const rect = header.getBoundingClientRect();
+      if (rect.width >= 160 && rect.height >= 50 && rect.top <= 160) {
+        return {
+          x: Math.max(0, rect.left),
+          y: Math.max(0, rect.top),
+          width: Math.min(760, window.innerWidth - Math.max(0, rect.left), rect.width),
+          height: Math.min(260, window.innerHeight - Math.max(0, rect.top), rect.height),
+          selector: "header crop"
+        };
+      }
+    }
+    return { x: 0, y: 0, width: Math.min(760, window.innerWidth), height: Math.min(260, window.innerHeight), selector: "top-of-site crop" };
+  })()`;
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function isBrowserCliErrorPage(value) {
-  return /main-frame-error|DNS_PROBE|ERR_[A-Z_]+|This site can't be reached|Hmmm…? can't reach this page|reload-button|Check if there is a typo|web server is down|error code 52\d|website is currently unavailable|page you were looking for doesn't exist|page may have moved|website coming soon|domain is registered|may be for sale|buy this domain|domain parking|parked domain|casino|pokies|top casinos/i.test(String(value || ""));
+  return /main-frame-error|DNS_PROBE|ERR_[A-Z_]+|This site can't be reached|Hmmm…? can't reach this page|reload-button|Check if there is a typo|web server is down|error code 52\d|website is currently unavailable|page you were looking for doesn't exist|page may have moved|website coming soon|domain is registered|may be for sale|buy this domain|domain parking|parked domain|brand new domain|porkbun|getyourguide|welcome to dubbo|casino|pokies|top casinos/i.test(String(value || ""));
 }
 
 function findBrowserExecutable() {
@@ -532,6 +776,7 @@ function runBrowserScreenshot(browserPath, url, outputPath) {
       "--no-first-run",
       "--no-default-browser-check",
       "--window-size=820,260",
+      "--user-agent=" + userAgent,
       "--virtual-time-budget=4500",
       "--screenshot=" + outputPath,
       url
@@ -561,6 +806,7 @@ function runBrowserDump(browserPath, url) {
       "--no-first-run",
       "--no-default-browser-check",
       "--window-size=820,260",
+      "--user-agent=" + userAgent,
       "--virtual-time-budget=4500",
       "--dump-dom",
       url
